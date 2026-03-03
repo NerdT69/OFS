@@ -1,0 +1,864 @@
+#include "OFS_Project.h"
+#include "OFS_Localization.h"
+#include "OFS_ImGui.h"
+#include "OFS_DynamicFontAtlas.h"
+#include "OFS_BlockingTask.h"
+#include "OFS_EventSystem.h"
+
+#include "subprocess.h"
+
+#include <algorithm>
+
+static std::array<const char*, 6> VideoExtensions{
+    ".mp4",
+    ".mkv",
+    ".webm",
+    ".wmv",
+    ".avi",
+    ".m4v",
+};
+
+static std::array<const char*, 4> AudioExtensions{
+    ".mp3",
+    ".ogg",
+    ".flac",
+    ".wav",
+};
+
+inline bool static HasMediaExtension(const std::string& pathStr) noexcept
+{
+    auto path = Util::PathFromString(pathStr);
+    auto ext = path.extension().u8string();
+
+    bool hasMediaExt = std::any_of(VideoExtensions.begin(), VideoExtensions.end(),
+        [&ext](auto validExt) noexcept {
+            return strcmp(ext.c_str(), validExt) == 0;
+        });
+
+    if (!hasMediaExt) {
+        hasMediaExt = std::any_of(AudioExtensions.begin(), AudioExtensions.end(),
+            [&ext](auto validExt) noexcept {
+                return strcmp(ext.c_str(), validExt) == 0;
+            });
+    }
+
+    return hasMediaExt;
+}
+
+inline bool FindMedia(const std::string& pathStr, std::string* outMedia) noexcept
+{
+    auto path = Util::PathFromString(pathStr);
+    auto pathDir = path.parent_path();
+
+    auto filename = path.stem().u8string();
+
+    std::error_code ec;
+    std::filesystem::directory_iterator dirIt(pathDir, ec);
+    for (auto& entry : dirIt) {
+        auto entryName = entry.path().stem().u8string();
+        if (entryName == filename) {
+            auto entryPathStr = entry.path().u8string();
+
+            if (HasMediaExtension(entryPathStr)) {
+                *outMedia = entryPathStr;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+OFS_Project::OFS_Project() noexcept
+{
+    stateHandle = OFS_ProjectState<ProjectState>::Register(ProjectState::StateName);
+    Funscripts.emplace_back(std::move(std::make_shared<Funscript>()));
+}
+
+OFS_Project::~OFS_Project() noexcept
+{
+}
+
+void OFS_Project::loadNecessaryGlyphs() noexcept
+{
+    // This should be called after loading or importing.
+    auto& projectState = State();
+    auto& metadata = projectState.metadata;
+    OFS_DynFontAtlas::AddText(metadata.type);
+    OFS_DynFontAtlas::AddText(metadata.title);
+    OFS_DynFontAtlas::AddText(metadata.creator);
+    OFS_DynFontAtlas::AddText(metadata.script_url);
+    OFS_DynFontAtlas::AddText(metadata.video_url);
+    for (auto& tag : metadata.tags) OFS_DynFontAtlas::AddText(tag);
+    for (auto& performer : metadata.performers) OFS_DynFontAtlas::AddText(performer);
+    OFS_DynFontAtlas::AddText(metadata.description);
+    OFS_DynFontAtlas::AddText(metadata.license);
+    OFS_DynFontAtlas::AddText(metadata.notes);
+    for (auto& script : Funscripts) OFS_DynFontAtlas::AddText(script->Title().c_str());
+    OFS_DynFontAtlas::AddText(lastPath);
+}
+
+bool OFS_Project::Load(const std::string& path) noexcept
+{
+    FUN_ASSERT(!valid, "Can't import if project is already loaded.");
+    bool oldProjectIncompatible = false;
+#if 1
+    std::vector<uint8_t> projectBin;
+    auto fileSize = Util::ReadFile(path.c_str(), projectBin);
+    if (fileSize > 0) {
+        // First try CBOR (binary format)
+        bool succ = false;
+        auto projectState = Util::ParseCBOR(projectBin, &succ);
+        if (succ) {
+            valid = OFS_StateManager::Get()->DeserializeProjectAll(projectState, true);
+        }
+        else {
+            // CBOR failed, try JSON format
+            std::string projectJson(projectBin.begin(), projectBin.end());
+            auto json = Util::ParseJson(projectJson, &succ);
+            if (succ) {
+                valid = OFS_StateManager::Get()->DeserializeProjectAll(json, false);
+            }
+            else {
+                // Check if it's an old OFS 2.0 simple project (just video reference)
+                // These files are too old to load, but we can continue without project state
+                LOG_WARN("Failed to parse project file, attempting to continue without project data.");
+                // Don't set valid=false here - we want to allow loading the funscript anyway
+                // The project will have default/empty state
+                valid = true;  // Allow continuing
+                oldProjectIncompatible = true;
+            }
+        }
+    }
+#else
+    std::string projectJson = Util::ReadFileString(path.c_str());
+    if (!projectJson.empty()) {
+        bool succ;
+        auto json = Util::ParseJson(projectJson, &succ);
+        if (succ) {
+            valid = OFS_StateManager::Get()->DeserializeProjectAll(json, false);
+        }
+        else {
+            valid = false;
+            addError("Failed to parse project.\nIt likely is an old project file not supported in " OFS_LATEST_GIT_TAG);
+        }
+    }
+#endif
+
+    if (valid) {
+        auto& projectState = State();
+        OFS_Binary::Deserialize(projectState.binaryFunscriptData, *this);
+        
+        // If old project was incompatible or no funscripts loaded, try to load from .funscript file
+        if (oldProjectIncompatible || Funscripts.empty() || (Funscripts.size() == 1 && Funscripts[0]->Actions().empty())) {
+            // Try to find and load the corresponding .funscript file
+            auto projectPath = Util::PathFromString(path);
+            auto funscriptPath = projectPath;
+            funscriptPath.replace_extension(Funscript::Extension);
+            if (Util::FileExists(funscriptPath.u8string())) {
+                LOG_INFO("Loading funscript from old project directory");
+                Funscripts.clear();
+                if (AddFunscript(funscriptPath.u8string())) {
+                    loadMultiAxis(funscriptPath.u8string());
+                    // Try to find media file
+                    std::string absMediaPath;
+                    if (FindMedia(funscriptPath.u8string(), &absMediaPath)) {
+                        projectState.relativeMediaPath = MakePathRelative(absMediaPath);
+                    }
+                }
+            }
+        }
+        
+        lastPath = path;
+        loadNecessaryGlyphs();
+    }
+
+    return valid;
+}
+
+bool OFS_Project::ImportFromFunscript(const std::string& file) noexcept
+{
+    FUN_ASSERT(!valid, "Can't import if project is already loaded.");
+
+    auto& projectState = State();
+    auto basePath = Util::PathFromString(file);
+    lastPath = basePath.replace_extension(OFS_Project::Extension).u8string();
+
+    if (Util::FileExists(file)) {
+        Funscripts.clear();
+        if (!AddFunscript(file)) {
+            addError("Failed to load funscript.");
+            return valid;
+        }
+        loadMultiAxis(file);
+
+        std::string absMediaPath;
+        if (FindMedia(file, &absMediaPath)) {
+            projectState.relativeMediaPath = MakePathRelative(absMediaPath);
+            valid = true;
+            loadNecessaryGlyphs();
+        }
+        else {
+            addError("Failed to find media for funscript.");
+            return valid;
+        }
+    }
+
+    return valid;
+}
+
+bool OFS_Project::ImportFromMedia(const std::string& file) noexcept
+{
+    FUN_ASSERT(!valid, "Can't import if project is already loaded.");
+
+    if (!HasMediaExtension(file)) {
+        // Unsupported media.
+        addError("Unsupported media file extension.");
+        return false;
+    }
+
+    auto& projectState = State();
+    auto basePath = Util::PathFromString(file);
+    lastPath = basePath.replace_extension(OFS_Project::Extension).u8string();
+
+    basePath = Util::PathFromString(file);
+    if (Util::FileExists(file)) {
+        projectState.relativeMediaPath = MakePathRelative(file);
+        auto funscriptPath = basePath;
+        auto funscriptPathStr = funscriptPath.replace_extension(".funscript").u8string();
+
+        Funscripts.clear();
+        AddFunscript(funscriptPathStr);
+        loadMultiAxis(funscriptPathStr);
+        valid = true;
+        loadNecessaryGlyphs();
+    }
+
+    return valid;
+}
+
+bool OFS_Project::AddFunscript(const std::string& path) noexcept
+{
+    bool loadedScript = false;
+
+    bool succ = false;
+    auto jsonText = Util::ReadFileString(path.c_str());
+    auto json = Util::ParseJson(jsonText, &succ);
+
+	bool isFirstFunscript = Funscripts.size() == 0;
+
+	if (succ && json.is_object()) {
+		// Support Funscript 2.0 (channels) and 1.1 (axes)
+		bool hasChannels = json.contains("channels") && json["channels"].is_object();
+		bool hasAxes = json.contains("axes") && json["axes"].is_array();
+		if (hasChannels || hasAxes) {
+			// Load root/top-level actions if available (treat as main channel)
+			{
+				auto script = std::make_shared<Funscript>();
+				auto metadata = Funscript::Metadata();
+				if (script->Deserialize(json, &metadata, isFirstFunscript)) {
+					script = Funscripts.emplace_back(std::move(script));
+					script->UpdateRelativePath(MakePathRelative(path));
+					if (isFirstFunscript) {
+						auto& projectState = State();
+						projectState.metadata = metadata;
+						isFirstFunscript = false;
+					}
+					loadedScript = true;
+				}
+			}
+			// Load each named channel (2.0)
+			if (hasChannels) {
+				for (auto it = json["channels"].begin(); it != json["channels"].end(); ++it) {
+					const std::string channelName = it.key();
+					const nlohmann::json& channelObj = it.value();
+					if (!channelObj.is_object()) continue;
+					if (!channelObj.contains("actions") || !channelObj["actions"].is_array()) continue;
+					auto scriptCh = std::make_shared<Funscript>();
+					if (scriptCh->Deserialize(channelObj, nullptr, false)) {
+						scriptCh = Funscripts.emplace_back(std::move(scriptCh));
+						// Synthesize a per-channel relative path for UI/export compatibility
+						auto base = Util::PathFromString(path);
+						auto baseNoExt = base;
+						baseNoExt.replace_extension("");
+						auto channelPath = (baseNoExt.u8string() + "." + channelName + ".funscript");
+						scriptCh->UpdateRelativePath(MakePathRelative(channelPath));
+						loadedScript = true;
+					}
+				}
+			}
+			// Load 1.1 axes
+			if (hasAxes) {
+				auto mapAxisIdToName = [](const std::string& id) -> std::string {
+					if (id == "L0") return "stroke";
+					if (id == "L1") return "surge";
+					if (id == "L2") return "sway";
+					if (id == "R0") return "twist";
+					if (id == "R1") return "roll";
+					if (id == "R2") return "pitch";
+					if (id == "A1") return "suck";
+					return id; // fallback
+				};
+				for (auto& axisObj : json["axes"]) {
+					if (!axisObj.is_object()) continue;
+					if (!axisObj.contains("actions") || !axisObj["actions"].is_array()) continue;
+					std::string axisId = axisObj.contains("id") && axisObj["id"].is_string() ? axisObj["id"].get<std::string>() : std::string{};
+					std::string channelName = !axisId.empty() ? mapAxisIdToName(axisId) : std::string{"axis"};
+					auto scriptAxis = std::make_shared<Funscript>();
+					if (scriptAxis->Deserialize(axisObj, nullptr, false)) {
+						scriptAxis = Funscripts.emplace_back(std::move(scriptAxis));
+						// Synthesize a per-axis relative path
+						auto base = Util::PathFromString(path);
+						auto baseNoExt = base;
+						baseNoExt.replace_extension("");
+						auto axisPath = (baseNoExt.u8string() + "." + channelName + ".funscript");
+						scriptAxis->UpdateRelativePath(MakePathRelative(axisPath));
+						loadedScript = true;
+					}
+				}
+			}
+			return loadedScript;
+		}
+	}
+
+	// Default 1.0 single-file path
+	auto script = std::make_shared<Funscript>();
+	auto metadata = Funscript::Metadata();
+	if (succ && script->Deserialize(json, &metadata, isFirstFunscript)) {
+		// Add existing script to project
+		script = Funscripts.emplace_back(std::move(script));
+		script->UpdateRelativePath(MakePathRelative(path));
+		if (isFirstFunscript) {
+			// Initialize project metadata using the first funscript
+			auto& projectState = State();
+			projectState.metadata = metadata;
+		}
+		loadedScript = true;
+	}
+	else {
+		// Add empty script to project
+		script = std::make_shared<Funscript>();
+		script->UpdateRelativePath(MakePathRelative(path));
+		script = Funscripts.emplace_back(std::move(script));
+	}
+	return loadedScript;
+}
+
+void OFS_Project::RemoveFunscript(int32_t idx) noexcept
+{
+    if (idx >= 0 && idx < Funscripts.size()) {
+        EV::Enqueue<FunscriptRemovedEvent>(Funscripts[idx]->Title());
+        Funscripts.erase(Funscripts.begin() + idx);
+    }
+}
+
+void OFS_Project::Save(const std::string& path, bool clearUnsavedChanges) noexcept
+{
+    {
+        auto& projectState = State();
+        projectState.binaryFunscriptData.clear();
+        auto size = OFS_Binary::Serialize(projectState.binaryFunscriptData, *this);
+        projectState.binaryFunscriptData.resize(size);
+    }
+
+#if 1
+    auto projectState = OFS_StateManager::Get()->SerializeProjectAll(true);
+    auto projectBin = Util::SerializeCBOR(projectState);
+    Util::WriteFile(path.c_str(), projectBin.data(), projectBin.size());
+#else
+    auto projectState = OFS_StateManager::Get()->SerializeProjectAll(false);
+    auto projectJson = Util::SerializeJson(projectState, false);
+    Util::WriteFile(path.c_str(), projectJson.data(), projectJson.size());
+#endif
+    if (clearUnsavedChanges) {
+        for (auto& script : Funscripts) {
+            script->ClearUnsavedEdits();
+        }
+    }
+}
+
+void OFS_Project::Update(float delta, bool idleMode) noexcept
+{
+    if (!idleMode) {
+        auto& projectState = State();
+        projectState.activeTimer += delta;
+    }
+    for (auto& script : Funscripts) script->Update();
+}
+
+bool OFS_Project::HasUnsavedEdits() noexcept
+{
+    OFS_PROFILE(__FUNCTION__);
+    for (auto& script : Funscripts) {
+        if (script->HasUnsavedEdits()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void OFS_Project::ShowProjectWindow(bool* open) noexcept
+{
+    if (*open) {
+        ImGui::OpenPopup(TR_ID("PROJECT", Tr::PROJECT));
+    }
+
+    if (ImGui::BeginPopupModal(TR_ID("PROJECT", Tr::PROJECT), open, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize)) {
+        OFS_PROFILE(__FUNCTION__);
+        auto& projectState = State();
+        auto& Metadata = projectState.metadata;
+        ImGui::PushID(Metadata.title.c_str());
+
+        ImGui::Text("%s: %s", TR(MEDIA), projectState.relativeMediaPath.c_str());
+
+        Util::FormatTime(Util::FormatBuffer, sizeof(Util::FormatBuffer), projectState.activeTimer, true);
+        ImGui::Text("%s: %s", TR(TIME_SPENT), Util::FormatBuffer);
+        ImGui::Separator();
+
+        ImGui::Spacing();
+        ImGui::TextDisabled(TR(SCRIPTS));
+        for (auto& script : Funscripts) {
+            if (ImGui::Button(script->Title().c_str(), ImVec2(-1.f, 0.f))) {
+                Util::SaveFileDialog(TR(CHANGE_DEFAULT_LOCATION),
+                    MakePathAbsolute(script->RelativePath()),
+                    [&](auto result) {
+                        if (!result.files.empty()) {
+                            auto newPath = Util::PathFromString(result.files[0]);
+                            if (newPath.extension().u8string() == ".funscript") {
+                                script->UpdateRelativePath(MakePathRelative(newPath.u8string()));
+                            }
+                        }
+                    });
+            }
+            OFS::Tooltip(TR(CHANGE_LOCATION));
+        }
+        ImGui::PopID();
+        ImGui::EndPopup();
+    }
+}
+
+void OFS_Project::ExportFunscripts() noexcept
+{
+    auto& state = State();
+    for (auto& script : Funscripts) {
+        FUN_ASSERT(!script->RelativePath().empty(), "path is empty");
+        if (!script->RelativePath().empty()) {
+            auto json = script->Serialize(state.metadata, true);
+            script->ClearUnsavedEdits();
+            // Reorder keys using ordered_json: version, metadata (ordered), actions
+            nlohmann::ordered_json ordered;
+            ordered["version"] = json.contains("version") ? json["version"] : "1.0";
+            // Build ordered metadata
+            nlohmann::ordered_json orderedMeta;
+            const auto& meta = json.contains("metadata") && json["metadata"].is_object() ? json["metadata"] : nlohmann::json::object();
+            if (meta.contains("type")) orderedMeta["type"] = meta["type"];
+            if (meta.contains("title")) orderedMeta["title"] = meta["title"];
+            if (meta.contains("creator")) orderedMeta["creator"] = meta["creator"];
+            if (meta.contains("script_url")) orderedMeta["script_url"] = meta["script_url"];
+            if (meta.contains("video_url")) orderedMeta["video_url"] = meta["video_url"];
+            if (meta.contains("tags")) orderedMeta["tags"] = meta["tags"];
+            if (meta.contains("performers")) orderedMeta["performers"] = meta["performers"];
+            if (meta.contains("description")) orderedMeta["description"] = meta["description"];
+            if (meta.contains("license")) orderedMeta["license"] = meta["license"];
+            if (meta.contains("notes")) orderedMeta["notes"] = meta["notes"];
+            if (meta.contains("duration")) orderedMeta["duration"] = meta["duration"];
+            if (meta.contains("durationTime")) orderedMeta["durationTime"] = meta["durationTime"];
+            // extra preserved properties
+            if (meta.contains("topic_url")) orderedMeta["topic_url"] = meta["topic_url"];
+            if (meta.contains("topic_tags")) orderedMeta["topic_tags"] = meta["topic_tags"];
+            if (meta.contains("topic_creator")) orderedMeta["topic_creator"] = meta["topic_creator"];
+            if (meta.contains("topic_date")) orderedMeta["topic_date"] = meta["topic_date"];
+            if (meta.contains("bookmarks")) orderedMeta["bookmarks"] = meta["bookmarks"];
+            if (meta.contains("chapters")) orderedMeta["chapters"] = meta["chapters"];
+            // Append any unknown metadata keys to preserve them
+            if (meta.is_object()) {
+                for (auto it = meta.begin(); it != meta.end(); ++it) {
+                    const auto& key = it.key();
+                    if (!orderedMeta.contains(key)) {
+                        orderedMeta[key] = it.value();
+                    }
+                }
+            }
+            ordered["metadata"] = std::move(orderedMeta);
+            ordered["actions"] = json.contains("actions") ? json["actions"] : nlohmann::json::array();
+            // Preserve any unknown top-level keys
+            if (json.is_object()) {
+                for (auto it = json.begin(); it != json.end(); ++it) {
+                    const auto& key = it.key();
+                    if (!ordered.contains(key)) {
+                        ordered[key] = it.value();
+                    }
+                }
+            }
+            auto jsonText = ordered.dump(-1, ' ');
+            Util::WriteFile(MakePathAbsolute(script->RelativePath()).c_str(), jsonText.data(), jsonText.size());
+        }
+    }
+}
+
+void OFS_Project::ExportFunscripts(const std::string& outputDir) noexcept
+{
+    auto& state = State();
+    for (auto& script : Funscripts) {
+        FUN_ASSERT(!script->RelativePath().empty(), "path is empty");
+        if (!script->RelativePath().empty()) {
+            auto filename = Util::PathFromString(script->RelativePath()).filename();
+            auto outputPath = (Util::PathFromString(outputDir) / filename).u8string();
+            auto json = script->Serialize(state.metadata, true);
+            script->ClearUnsavedEdits();
+            // Reorder keys using ordered_json: version, metadata (ordered), actions
+            nlohmann::ordered_json ordered;
+            ordered["version"] = json.contains("version") ? json["version"] : "1.0";
+            nlohmann::ordered_json orderedMeta;
+            const auto& meta = json.contains("metadata") && json["metadata"].is_object() ? json["metadata"] : nlohmann::json::object();
+            if (meta.contains("type")) orderedMeta["type"] = meta["type"];
+            if (meta.contains("title")) orderedMeta["title"] = meta["title"];
+            if (meta.contains("creator")) orderedMeta["creator"] = meta["creator"];
+            if (meta.contains("script_url")) orderedMeta["script_url"] = meta["script_url"];
+            if (meta.contains("video_url")) orderedMeta["video_url"] = meta["video_url"];
+            if (meta.contains("tags")) orderedMeta["tags"] = meta["tags"];
+            if (meta.contains("performers")) orderedMeta["performers"] = meta["performers"];
+            if (meta.contains("description")) orderedMeta["description"] = meta["description"];
+            if (meta.contains("license")) orderedMeta["license"] = meta["license"];
+            if (meta.contains("notes")) orderedMeta["notes"] = meta["notes"];
+            if (meta.contains("duration")) orderedMeta["duration"] = meta["duration"];
+            if (meta.contains("durationTime")) orderedMeta["durationTime"] = meta["durationTime"];
+            if (meta.contains("topic_url")) orderedMeta["topic_url"] = meta["topic_url"];
+            if (meta.contains("topic_tags")) orderedMeta["topic_tags"] = meta["topic_tags"];
+            if (meta.contains("topic_creator")) orderedMeta["topic_creator"] = meta["topic_creator"];
+            if (meta.contains("topic_date")) orderedMeta["topic_date"] = meta["topic_date"];
+            if (meta.contains("bookmarks")) orderedMeta["bookmarks"] = meta["bookmarks"];
+            if (meta.contains("chapters")) orderedMeta["chapters"] = meta["chapters"];
+            if (meta.is_object()) {
+                for (auto it = meta.begin(); it != meta.end(); ++it) {
+                    const auto& key = it.key();
+                    if (!orderedMeta.contains(key)) {
+                        orderedMeta[key] = it.value();
+                    }
+                }
+            }
+            ordered["metadata"] = std::move(orderedMeta);
+            ordered["actions"] = json.contains("actions") ? json["actions"] : nlohmann::json::array();
+            if (json.is_object()) {
+                for (auto it = json.begin(); it != json.end(); ++it) {
+                    const auto& key = it.key();
+                    if (!ordered.contains(key)) {
+                        ordered[key] = it.value();
+                    }
+                }
+            }
+            auto jsonText = ordered.dump(-1, ' ');
+            Util::WriteFile(outputPath.c_str(), jsonText.data(), jsonText.size());
+        }
+    }
+}
+
+void OFS_Project::ExportFunscript(const std::string& outputPath, int32_t idx) noexcept
+{
+    FUN_ASSERT(idx >= 0 && idx < Funscripts.size(), "out of bounds");
+    auto& state = State();
+    auto json = Funscripts[idx]->Serialize(state.metadata, true);
+    Funscripts[idx]->ClearUnsavedEdits();
+    // Using this function changes the default path
+    Funscripts[idx]->UpdateRelativePath(MakePathRelative(outputPath));
+    // Reorder keys using ordered_json: version, metadata (ordered), actions
+    nlohmann::ordered_json ordered;
+    ordered["version"] = json.contains("version") ? json["version"] : "1.0";
+    nlohmann::ordered_json orderedMeta;
+    const auto& meta = json.contains("metadata") && json["metadata"].is_object() ? json["metadata"] : nlohmann::json::object();
+    if (meta.contains("type")) orderedMeta["type"] = meta["type"];
+    if (meta.contains("title")) orderedMeta["title"] = meta["title"];
+    if (meta.contains("creator")) orderedMeta["creator"] = meta["creator"];
+    if (meta.contains("script_url")) orderedMeta["script_url"] = meta["script_url"];
+    if (meta.contains("video_url")) orderedMeta["video_url"] = meta["video_url"];
+    if (meta.contains("tags")) orderedMeta["tags"] = meta["tags"];
+    if (meta.contains("performers")) orderedMeta["performers"] = meta["performers"];
+    if (meta.contains("description")) orderedMeta["description"] = meta["description"];
+    if (meta.contains("license")) orderedMeta["license"] = meta["license"];
+    if (meta.contains("notes")) orderedMeta["notes"] = meta["notes"];
+    if (meta.contains("duration")) orderedMeta["duration"] = meta["duration"];
+    if (meta.contains("durationTime")) orderedMeta["durationTime"] = meta["durationTime"];
+    if (meta.contains("topic_url")) orderedMeta["topic_url"] = meta["topic_url"];
+    if (meta.contains("topic_tags")) orderedMeta["topic_tags"] = meta["topic_tags"];
+    if (meta.contains("topic_creator")) orderedMeta["topic_creator"] = meta["topic_creator"];
+    if (meta.contains("topic_date")) orderedMeta["topic_date"] = meta["topic_date"];
+    if (meta.contains("bookmarks")) orderedMeta["bookmarks"] = meta["bookmarks"];
+    if (meta.contains("chapters")) orderedMeta["chapters"] = meta["chapters"];
+    if (meta.is_object()) {
+        for (auto it = meta.begin(); it != meta.end(); ++it) {
+            const auto& key = it.key();
+            if (!orderedMeta.contains(key)) {
+                orderedMeta[key] = it.value();
+            }
+        }
+    }
+    ordered["metadata"] = std::move(orderedMeta);
+    ordered["actions"] = json.contains("actions") ? json["actions"] : nlohmann::json::array();
+    if (json.is_object()) {
+        for (auto it = json.begin(); it != json.end(); ++it) {
+            const auto& key = it.key();
+            if (!ordered.contains(key)) {
+                ordered[key] = it.value();
+            }
+        }
+    }
+    auto jsonText = ordered.dump(-1, ' ');
+    Util::WriteFile(outputPath.c_str(), jsonText.data(), jsonText.size());
+}
+
+void OFS_Project::ExportFunscript2Quick() noexcept
+{
+	// Export a single combined 2.0 funscript next to each script's default path.
+	// If multiple scripts are loaded, export one 2.0 file based on the first script path
+	// and include other scripts as channels.
+	auto& state = State();
+	if (Funscripts.empty()) return;
+
+	// Determine primary output path (use first script's relative path)
+	auto baseRel = Util::PathFromString(Funscripts[0]->RelativePath());
+	if (baseRel.empty()) return;
+	// Ensure extension is .funscript
+	baseRel.replace_extension(".funscript");
+	auto outPath = MakePathAbsolute(baseRel.u8string());
+
+	// Start from the primary axis as fully serialized 1.0 (keeps chapters/bookmarks)
+	nlohmann::json root = Funscripts[0]->Serialize(state.metadata, true);
+	root["version"] = "2.0";
+	// Channels for subsequent scripts using filename suffix as channel name if present
+	{
+		nlohmann::json channels = nlohmann::json::object();
+		for (size_t i = 1; i < Funscripts.size(); ++i) {
+			auto& fs = Funscripts[i];
+			nlohmann::json chObj;
+			// Only include actions
+			Funscript::Serialize(chObj, fs->Data(), state.metadata, false);
+			nlohmann::json actions = std::move(chObj["actions"]);
+			// Channel name derived from relative filename like name.roll.funscript -> "roll"
+			auto rel = Util::PathFromString(fs->RelativePath());
+			auto stem = rel.stem().u8string();
+			// If the base contains dots, use the last segment as channel (e.g., name.roll)
+			auto dot = stem.rfind('.');
+			std::string channelName = dot != std::string::npos ? stem.substr(dot + 1) : fs->Title();
+			channels[channelName] = nlohmann::json{ {"actions", std::move(actions)} };
+		}
+		if (!channels.empty()) root["channels"] = std::move(channels);
+	}
+
+    // Write file with ordered keys: version, metadata (ordered), actions, channels
+    nlohmann::ordered_json ordered;
+    ordered["version"] = root.contains("version") ? root["version"] : "2.0";
+    {
+        nlohmann::ordered_json orderedMeta;
+        const auto& meta = root.contains("metadata") && root["metadata"].is_object() ? root["metadata"] : nlohmann::json::object();
+        if (meta.contains("type")) orderedMeta["type"] = meta["type"];
+        if (meta.contains("title")) orderedMeta["title"] = meta["title"];
+        if (meta.contains("creator")) orderedMeta["creator"] = meta["creator"];
+        if (meta.contains("script_url")) orderedMeta["script_url"] = meta["script_url"];
+        if (meta.contains("video_url")) orderedMeta["video_url"] = meta["video_url"];
+        if (meta.contains("tags")) orderedMeta["tags"] = meta["tags"];
+        if (meta.contains("performers")) orderedMeta["performers"] = meta["performers"];
+        if (meta.contains("description")) orderedMeta["description"] = meta["description"];
+        if (meta.contains("license")) orderedMeta["license"] = meta["license"];
+        if (meta.contains("notes")) orderedMeta["notes"] = meta["notes"];
+        if (meta.contains("duration")) orderedMeta["duration"] = meta["duration"];
+        if (meta.contains("durationTime")) orderedMeta["durationTime"] = meta["durationTime"];
+        if (meta.contains("topic_url")) orderedMeta["topic_url"] = meta["topic_url"];
+        if (meta.contains("topic_tags")) orderedMeta["topic_tags"] = meta["topic_tags"];
+        if (meta.contains("topic_creator")) orderedMeta["topic_creator"] = meta["topic_creator"];
+        if (meta.contains("topic_date")) orderedMeta["topic_date"] = meta["topic_date"];
+        if (meta.contains("bookmarks")) orderedMeta["bookmarks"] = meta["bookmarks"];
+        if (meta.contains("chapters")) orderedMeta["chapters"] = meta["chapters"];
+        ordered["metadata"] = std::move(orderedMeta);
+    }
+    ordered["actions"] = root.contains("actions") ? root["actions"] : nlohmann::json::array();
+    if (root.contains("channels")) ordered["channels"] = root["channels"];
+    // Preserve any unknown top-level keys
+    if (root.is_object()) {
+        for (auto it = root.begin(); it != root.end(); ++it) {
+            const auto& key = it.key();
+            if (!ordered.contains(key)) {
+                ordered[key] = it.value();
+            }
+        }
+    }
+    auto jsonText = ordered.dump(-1, ' ');
+	Util::WriteFile(outPath.c_str(), jsonText.data(), jsonText.size());
+}
+
+void OFS_Project::ExportFunscript11Quick() noexcept
+{
+	// Export a single combined 1.1 funscript (axes array) next to first script's path
+	if (Funscripts.empty()) return;
+	auto& state = State();
+
+	// Determine output path based on first script
+	auto baseRel = Util::PathFromString(Funscripts[0]->RelativePath());
+	if (baseRel.empty()) return;
+	baseRel.replace_extension(".funscript");
+	auto outPath = MakePathAbsolute(baseRel.u8string());
+
+	// Start from the primary axis as fully serialized 1.0 (keeps chapters/bookmarks)
+	nlohmann::json root = Funscripts[0]->Serialize(state.metadata, true);
+	root["version"] = "1.1";
+	// axes array from subsequent scripts using id mapping inverse
+	{
+		auto channelNameToId = [](const std::string& name) -> std::string {
+			if (name == "stroke") return "L0";
+			if (name == "surge") return "L1";
+			if (name == "sway") return "L2";
+			if (name == "twist") return "R0";
+			if (name == "roll") return "R1";
+			if (name == "pitch") return "R2";
+			if (name == "suck") return "A1";
+			return name;
+		};
+		nlohmann::json axes = nlohmann::json::array();
+		for (size_t i = 1; i < Funscripts.size(); ++i) {
+			auto& fs = Funscripts[i];
+			nlohmann::json chObj;
+			Funscript::Serialize(chObj, fs->Data(), state.metadata, false);
+			nlohmann::json actions = std::move(chObj["actions"]);
+			// Derive channel name from filename suffix
+			auto rel = Util::PathFromString(fs->RelativePath());
+			auto stem = rel.stem().u8string();
+			auto dot = stem.rfind('.');
+			std::string channelName = dot != std::string::npos ? stem.substr(dot + 1) : fs->Title();
+			std::string axisId = channelNameToId(channelName);
+			axes.emplace_back(nlohmann::json{ {"id", axisId}, {"actions", std::move(actions)} });
+		}
+		if (!axes.empty()) root["axes"] = std::move(axes);
+	}
+
+    // Write file with ordered keys: version, metadata (ordered), actions, axes
+    nlohmann::ordered_json ordered;
+    ordered["version"] = root.contains("version") ? root["version"] : "1.1";
+    {
+        nlohmann::ordered_json orderedMeta;
+        const auto& meta = root.contains("metadata") && root["metadata"].is_object() ? root["metadata"] : nlohmann::json::object();
+        if (meta.contains("type")) orderedMeta["type"] = meta["type"];
+        if (meta.contains("title")) orderedMeta["title"] = meta["title"];
+        if (meta.contains("creator")) orderedMeta["creator"] = meta["creator"];
+        if (meta.contains("script_url")) orderedMeta["script_url"] = meta["script_url"];
+        if (meta.contains("video_url")) orderedMeta["video_url"] = meta["video_url"];
+        if (meta.contains("tags")) orderedMeta["tags"] = meta["tags"];
+        if (meta.contains("performers")) orderedMeta["performers"] = meta["performers"];
+        if (meta.contains("description")) orderedMeta["description"] = meta["description"];
+        if (meta.contains("license")) orderedMeta["license"] = meta["license"];
+        if (meta.contains("notes")) orderedMeta["notes"] = meta["notes"];
+        if (meta.contains("duration")) orderedMeta["duration"] = meta["duration"];
+        if (meta.contains("durationTime")) orderedMeta["durationTime"] = meta["durationTime"];
+        if (meta.contains("topic_url")) orderedMeta["topic_url"] = meta["topic_url"];
+        if (meta.contains("topic_tags")) orderedMeta["topic_tags"] = meta["topic_tags"];
+        if (meta.contains("topic_creator")) orderedMeta["topic_creator"] = meta["topic_creator"];
+        if (meta.contains("topic_date")) orderedMeta["topic_date"] = meta["topic_date"];
+        if (meta.contains("bookmarks")) orderedMeta["bookmarks"] = meta["bookmarks"];
+        if (meta.contains("chapters")) orderedMeta["chapters"] = meta["chapters"];
+        ordered["metadata"] = std::move(orderedMeta);
+    }
+    ordered["actions"] = root.contains("actions") ? root["actions"] : nlohmann::json::array();
+    if (root.contains("axes")) ordered["axes"] = root["axes"];
+    if (root.is_object()) {
+        for (auto it = root.begin(); it != root.end(); ++it) {
+            const auto& key = it.key();
+            if (!ordered.contains(key)) {
+                ordered[key] = it.value();
+            }
+        }
+    }
+    auto jsonText = ordered.dump(-1, ' ');
+	Util::WriteFile(outPath.c_str(), jsonText.data(), jsonText.size());
+}
+
+void OFS_Project::loadMultiAxis(const std::string& rootScript) noexcept
+{
+    std::vector<std::filesystem::path> relatedFiles;
+    {
+        auto filename = Util::Filename(rootScript) + '.';
+        auto searchDirectory = Util::PathFromString(rootScript);
+        searchDirectory.remove_filename();
+
+        std::error_code ec;
+        std::filesystem::directory_iterator dirIt(searchDirectory, ec);
+        for (auto&& entry : dirIt) {
+            auto extension = entry.path()
+                                 .extension()
+                                 .u8string();
+            auto currentFilename = entry.path()
+                                       .filename()
+                                       .replace_extension("")
+                                       .u8string();
+
+            if (extension == Funscript::Extension
+                && Util::StringStartsWith(currentFilename, filename)
+                && currentFilename != filename) {
+                relatedFiles.emplace_back(entry.path());
+            }
+        }
+    }
+    // reorder for 3d simulator
+    std::array<std::string, 3> desiredOrder{
+        // it's in reverse order
+        ".twist.funscript",
+        ".pitch.funscript",
+        ".roll.funscript"
+    };
+    if (relatedFiles.size() > 1) {
+        for (auto& ending : desiredOrder) {
+            for (int i = 0; i < relatedFiles.size(); i++) {
+                auto& path = relatedFiles[i];
+                if (Util::StringEndsWith(path.u8string(), ending)) {
+                    auto move = std::move(path);
+                    relatedFiles.erase(relatedFiles.begin() + i);
+                    relatedFiles.emplace_back(std::move(move));
+                    break;
+                }
+            }
+        }
+    }
+    // load the related files
+    for (int i = relatedFiles.size() - 1; i >= 0; i -= 1) {
+        auto& file = relatedFiles[i];
+        auto filePathString = file.u8string();
+        AddFunscript(filePathString);
+    }
+}
+
+std::string OFS_Project::MakePathAbsolute(const std::string& relPathStr) const noexcept
+{
+    auto relPath = Util::PathFromString(relPathStr);
+    FUN_ASSERT(relPath.is_relative(), "Path isn't relative");
+    if (relPath.is_absolute()) {
+        LOGF_ERROR("Path was already absolute. \"%s\"", relPathStr.c_str());
+        return relPathStr;
+    }
+    else {
+        auto projectDir = Util::PathFromString(lastPath);
+        projectDir.remove_filename();
+        std::error_code ec;
+        auto absPath = std::filesystem::absolute(projectDir / relPath, ec);
+        if (!ec) {
+            auto absPathStr = absPath.u8string();
+            LOGF_INFO("Convert relative path \"%s\" to absolute \"%s\"", relPath.u8string().c_str(), absPathStr.c_str());
+            return absPathStr;
+        }
+        FUN_ASSERT(false, "This must not happen.");
+        LOG_ERROR("Failed to convert path to absolute path.");
+        return "";
+    }
+}
+
+std::string OFS_Project::MakePathRelative(const std::string& absPathStr) const noexcept
+{
+    auto absPath = Util::PathFromString(absPathStr);
+    auto projectDir = Util::PathFromString(lastPath).parent_path();
+    auto relPath = absPath.lexically_relative(projectDir);
+    auto relPathStr = relPath.u8string();
+    LOGF_INFO("Convert absolute path \"%s\" to relative \"%s\"", absPathStr.c_str(), relPathStr.c_str());
+    return relPathStr;
+}
+
+std::string OFS_Project::MediaPath() const noexcept
+{
+    auto& projectState = State();
+    return MakePathAbsolute(projectState.relativeMediaPath);
+}
