@@ -86,16 +86,28 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
 find_package(Git)
+
+# Try to get git tag, use default if no tags exist
 execute_process(
     COMMAND ${GIT_EXECUTABLE} --git-dir=${CMAKE_SOURCE_DIR}/.git describe --abbrev=0 --tags
     RESULT_VARIABLE result
-    OUTPUT_VARIABLE LATEST_GIT_TAG)
+    OUTPUT_VARIABLE LATEST_GIT_TAG
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+if(result OR LATEST_GIT_TAG STREQUAL "")
+    set(LATEST_GIT_TAG "v5.0.0")
+    message("No git tags found, using default version: ${LATEST_GIT_TAG}")
+endif()
 
 execute_process(
     COMMAND ${GIT_EXECUTABLE} --git-dir=${CMAKE_SOURCE_DIR}/.git rev-parse --short HEAD
     RESULT_VARIABLE result
-    OUTPUT_VARIABLE LATEST_GIT_HASH)
+    OUTPUT_VARIABLE LATEST_GIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+if(result OR LATEST_GIT_HASH STREQUAL "")
+    set(LATEST_GIT_HASH "unknown")
+endif()
 
 string(REGEX REPLACE "\n$" "" LATEST_GIT_TAG "${LATEST_GIT_TAG}")
 set(LATEST_GIT_TAG "\"${LATEST_GIT_TAG}\"")

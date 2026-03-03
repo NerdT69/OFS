@@ -15,7 +15,8 @@ The project is based on OpenGL, SDL2, ImGui, libmpv, & all these other great [li
 - **Custom Action Editor** — Create and edit custom actions
 - **New Patterns** — Additional pattern options for funscripts
 
-![Speed map](./data/speed-map.png)
+![Custom Action Editor](./Screenshot1.png)
+![Pattern Panel](./Screenshot2.png)
 
 ![OpenFunscripter Screenshot](./OpenFunscripter.jpg)
 
