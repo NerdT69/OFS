@@ -6,7 +6,7 @@ AppVersion=5.0.0
 AppPublisher=OpenFunscripter
 AppPublisherURL=https://github.com/nerdtoys69/OpenFunscripter
 AppId=OpenFunscripter/OFS
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesInstallIn64BitMode=x64compatible
 DefaultDirName={pf}\OpenFunscripter
 DefaultGroupName=OpenFunscripter
 UninstallDisplayIcon={app}\OpenFunscripter.exe
@@ -37,12 +37,12 @@ begin
     RegQueryStringValue(HKCU, sUnInstPath, 'UninstallString', sUnInstallString);
   Result := sUnInstallString;
 end;
-/////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 function IsUpgrade(): Boolean;
 begin
   Result := (GetUninstallString() <> '');
 end;
-/////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 function UnInstallOldVersion(): Integer;
 var
   sUnInstallString: String;
@@ -65,7 +65,7 @@ begin
   end else
     Result := 1;
 end;
-/////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if (CurStep=ssInstall) then
