@@ -1,14 +1,14 @@
 # OpenFunscripter
 
-[![Latest Release](https://img.shields.io/github/v/release/nerdtoys69/OFS?style=flat-square)](https://github.com/nerdtoys69/OFS/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/NerdT69/OFS?style=flat-square)](https://github.com/NerdT69/OFS/releases/latest)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0)
-[![Downloads](https://img.shields.io/github/downloads/nerdtoys69/OFS/total?style=flat-square)](https://github.com/nerdtoys69/OFS/releases)
-[![Windows](https://img.shields.io/badge/Windows-0078D6?style=flat-square&logo=windows&logoColor=white)](https://github.com/nerdtoys69/OFS/releases/latest)
-[![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black)](https://github.com/nerdtoys69/OFS/releases/latest)
-[![macOS](https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple&logoColor=white)](https://github.com/nerdtoys69/OFS/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/NerdT69/OFS/total?style=flat-square)](https://github.com/NerdT69/OFS/releases)
+[![Windows](https://img.shields.io/badge/Windows-0078D6?style=flat-square&logo=windows&logoColor=white)](https://github.com/NerdT69/OFS/releases/latest)
+[![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black)](https://github.com/NerdT69/OFS/releases/latest)
+[![macOS](https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple&logoColor=white)](https://github.com/NerdT69/OFS/releases/latest)
 
 Can be used to create `.funscript` files. (NSFW)  
-The project is based on OpenGL, SDL2, ImGui, libmpv, & all these other great [libraries](https://github.com/nerdtoys69/OFS/tree/master/lib).
+The project is based on OpenGL, SDL2, ImGui, libmpv, & all these other great [libraries](https://github.com/NerdT69/OFS/tree/master/lib).
 
 ### V5 Features
 

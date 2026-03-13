@@ -4,7 +4,7 @@
 AppName=OpenFunscripter
 AppVersion=5.0.0
 AppPublisher=OpenFunscripter
-AppPublisherURL=https://github.com/nerdtoys69/OpenFunscripter
+AppPublisherURL=https://github.com/NerdT69/OFS
 AppId=OpenFunscripter/OFS
 ArchitecturesInstallIn64BitMode=x64compatible
 DefaultDirName={pf}\OpenFunscripter
