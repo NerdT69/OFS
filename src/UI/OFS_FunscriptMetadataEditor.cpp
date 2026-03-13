@@ -150,7 +150,16 @@ bool OFS_FunscriptMetadataEditor::ShowMetadataEditor(bool* open, Funscript::Meta
         ImGui::NewLine();
         ImGui::Separator();
         float availWidth = ImGui::GetContentRegionAvail().x;
-        if (ImGui::Button(FMT("%s " ICON_COPY, TR(SAVE_TEMPLATE)), ImVec2(availWidth, 0.f))) {
+        
+        // Load Template button
+        if (ImGui::Button(FMT("%s " ICON_FOLDER_OPEN, TR(LOAD_TEMPLATE)), ImVec2(availWidth * 0.5f - 2.f, 0.f))) {
+            auto& state = FunscriptMetadataState::State(stateHandle);
+            metadata = state.defaultMetadata;
+            metaDataChanged = true;
+        }
+        ImGui::SameLine();
+        // Save Template button
+        if (ImGui::Button(FMT("%s " ICON_COPY, TR(SAVE_TEMPLATE)), ImVec2(availWidth * 0.5f - 2.f, 0.f))) {
             auto& state = FunscriptMetadataState::State(stateHandle);
             state.defaultMetadata = metadata;
         }

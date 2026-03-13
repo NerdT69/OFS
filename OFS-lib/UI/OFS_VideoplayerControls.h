@@ -11,6 +11,7 @@ private:
 	float lastPlayerPosition = 0.0f;
 
 	uint32_t chapterStateHandle = 0xFFFF'FFFF;
+	uint32_t prefStateHandle = 0xFFFF'FFFF;
 
 	uint32_t measureStartTime = 0;
 	bool mute = false;
@@ -35,7 +36,7 @@ public:
 	std::unique_ptr<VideoPreview> videoPreview;
 	std::unique_ptr<FunscriptHeatmap> Heatmap;
 
-	void Init(class OFS_Videoplayer* player, bool hwAccel) noexcept;
+	void Init(class OFS_Videoplayer* player, bool hwAccel, uint32_t prefStateHandle = 0xFFFF'FFFF) noexcept;
 
 	inline void UpdateHeatmap(float totalDuration, const FunscriptArray& actions) noexcept
 	{

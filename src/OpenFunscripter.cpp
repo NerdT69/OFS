@@ -13,6 +13,7 @@
 #include "state/states/VideoplayerWindowState.h"
 #include "state/states/BaseOverlayState.h"
 #include "state/states/ChapterState.h"
+#include "state/MetadataEditorState.h"
 
 #include <filesystem>
 
@@ -214,6 +215,12 @@ bool OpenFunscripter::Init(int argc, char* argv[])
         return false;
     }
     player->SetPaused(true);
+    
+    // Load saved volume preferences
+    player->SetVolume(prefState.volume);
+    if (prefState.muted) {
+        player->Mute();
+    }
 
     playerWindow = std::make_unique<OFS_VideoplayerWindow>();
     if (!playerWindow->Init(player.get())) {
@@ -221,7 +228,7 @@ bool OpenFunscripter::Init(int argc, char* argv[])
         return false;
     }
 
-    playerControls.Init(player.get(), prefState.forceHwDecoding);
+    playerControls.Init(player.get(), prefState.forceHwDecoding, preferences->StateHandle());
     undoSystem = std::make_unique<UndoSystem>();
 
     keys = std::make_unique<OFS_KeybindingSystem>();
@@ -1927,6 +1934,21 @@ void OpenFunscripter::initProject() noexcept
             const auto& prefState = PreferenceState::State(preferences->StateHandle());
             ShowMetadataEditor = prefState.showMetaOnNew;
             projectState.nudgeMetadata = false;
+            
+            // Apply default metadata template to new projects
+            auto& defaultMetaState = FunscriptMetadataState::State(metadataEditor->StateHandle());
+            defaultMetaState.ApplyDefaultMetadata(projectState.metadata);
+            
+            // Set title to filename if preference is enabled
+            if (prefState.titleDefaultsToFilename && !LoadedFunscripts().empty()) {
+                auto& firstScript = LoadedFunscripts()[0];
+                if (!firstScript->RelativePath().empty()) {
+                    auto filename = Util::PathFromString(firstScript->RelativePath()).stem().u8string();
+                    if (!filename.empty()) {
+                        projectState.metadata.title = filename;
+                    }
+                }
+            }
         }
 
         if (Util::FileExists(LoadedProject->MediaPath())) {

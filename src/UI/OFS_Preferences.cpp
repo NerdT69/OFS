@@ -194,6 +194,9 @@ bool OFS_Preferences::ShowPreferenceWindow() noexcept
 					if (ImGui::Checkbox(TR(SHOW_METADATA_DIALOG_ON_NEW_PROJECT), &state.showMetaOnNew)) {
 						save = true;
 					}
+					if (ImGui::Checkbox("Title defaults to filename", &state.titleDefaultsToFilename)) {
+						save = true;
+					}
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();

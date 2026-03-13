@@ -10,6 +10,7 @@
 #include "OFS_DynamicFontAtlas.h"
 
 #include "state/states/ChapterState.h"
+#include "state/PreferenceState.h"
 
 #include "imgui.h"
 #include "imgui_stdlib.h"
@@ -23,10 +24,11 @@ void OFS_VideoplayerControls::VideoLoaded(const VideoLoadedEvent* ev) noexcept
     videoPreview->PreviewVideo(ev->videoPath, 0.f);
 }
 
-void OFS_VideoplayerControls::Init(OFS_Videoplayer* player, bool hwAccel) noexcept
+void OFS_VideoplayerControls::Init(OFS_Videoplayer* player, bool hwAccel, uint32_t prefStateHandle) noexcept
 {
     if(this->player) return;
     this->player = player;
+    this->prefStateHandle = prefStateHandle;
     chapterStateHandle = OFS_ProjectState<ChapterState>::Register(ChapterState::StateName);
     Heatmap = std::make_unique<FunscriptHeatmap>();
     videoPreview = std::make_unique<VideoPreview>(hwAccel);
@@ -643,6 +645,11 @@ void OFS_VideoplayerControls::DrawControls() noexcept
         else {
             player->Unmute();
         }
+        // Save mute state to preferences
+        if (prefStateHandle != 0xFFFF'FFFF) {
+            auto& prefState = PreferenceState::State(prefStateHandle);
+            prefState.muted = mute;
+        }
     }
     ImGui::SetColumnWidth(0, ImGui::GetItemRectSize().x + 10);
     ImGui::NextColumn();
@@ -653,6 +660,11 @@ void OFS_VideoplayerControls::DrawControls() noexcept
         player->SetVolume(volume);
         if (volume > 0.0f) {
             mute = false;
+        }
+        // Save volume to preferences
+        if (prefStateHandle != 0xFFFF'FFFF) {
+            auto& prefState = PreferenceState::State(prefStateHandle);
+            prefState.volume = volume;
         }
     }
     ImGui::NextColumn();

@@ -10,7 +10,7 @@ enum class OFS_Theme : int32_t
 
 struct PreferenceState 
 {
-	static constexpr auto StateName = "Preferences";
+	static constexpr auto StateName = "Preferences";;
 
 	std::string languageCsv;
 	std::string fontOverride;
@@ -25,6 +25,11 @@ struct PreferenceState
 
 	bool forceHwDecoding = false;
 	bool showMetaOnNew = true;
+
+	// New preferences for user convenience
+	float volume = 1.0f;
+	bool muted = false;
+	bool titleDefaultsToFilename = true;
 
 	static inline PreferenceState& State(uint32_t stateHandle) noexcept {
 		return OFS_AppState<PreferenceState>(stateHandle).Get();
@@ -41,4 +46,7 @@ REFL_TYPE(PreferenceState)
 	REFL_FIELD(framerateLimit)
 	REFL_FIELD(forceHwDecoding)
 	REFL_FIELD(showMetaOnNew)
+	REFL_FIELD(volume)
+	REFL_FIELD(muted)
+	REFL_FIELD(titleDefaultsToFilename)
 REFL_END
