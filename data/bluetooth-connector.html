@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>OpenFunscripter Bluetooth Connector</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 30px; max-width: 500px; margin: 0 auto; background: #1a1a2e; color: #eee; }
+        h1 { color: #00d4ff; }
+        .status { padding: 15px; margin: 15px 0; border-radius: 8px; font-size: 16px; }
+        .waiting { background: #16213e; border: 1px solid #0f3460; }
+        .scanning { background: #1f4068; border: 1px solid #00d4ff; }
+        .connected { background: #1b4332; border: 1px solid #00ff88; }
+        .error { background: #4a1515; border: 1px solid #ff4444; }
+        button { padding: 15px 30px; font-size: 18px; cursor: pointer; background: #00d4ff; color: #000; border: none; border-radius: 5px; font-weight: bold; }
+        button:hover { background: #00b8e6; }
+        button:disabled { background: #555; cursor: not-allowed; }
+        .device-info { background: #16213e; padding: 15px; margin: 15px 0; border-radius: 8px; border: 1px solid #0f3460; }
+        .log { background: #0d1b2a; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 150px; overflow-y: auto; }
+        .log-entry { margin: 2px 0; }
+        .log-error { color: #ff6b6b; }
+        .log-success { color: #51cf66; }
+        .log-info { color: #74c0fc; }
+    </style>
+</head>
+<body>
+    <h1>🔌 Bluetooth Connector</h1>
+    <p>Select your device to connect to OpenFunscripter via Bluetooth.</p>
+    
+    <div id="status" class="status waiting">Ready to connect</div>
+    
+    <button id="scanBtn">Select Bluetooth Device</button>
+    
+    <div id="deviceInfo" class="device-info" style="display:none;">
+        <p><strong>Device:</strong> <span id="deviceName"></span></p>
+        <p><strong>Status:</strong> <span id="connectionStatus"></span></p>
+    </div>
+    
+    <div class="log" id="log"></div>
+
+    <script>
+        const logEl = document.getElementById('log');
+        const statusEl = document.getElementById('status');
+        
+        function log(msg, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry log-' + type;
+            entry.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log('[' + type + ']', msg);
+        }
+        
+        // Try to connect to WebSocket server
+        let ws = null;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        
+        function connectWebSocket() {
+            ws = new WebSocket('ws://localhost:8080/bluetooth');
+            
+            ws.onopen = () => {
+                log('Connected to OpenFunscripter', 'success');
+                reconnectAttempts = 0;
+                statusEl.textContent = 'Connected! Click button to select device.';
+                statusEl.className = 'status waiting';
+            };
+            
+            ws.onmessage = (event) => {
+                log('Received: ' + event.data, 'info');
+                handleMessage(event.data);
+            };
+            
+            ws.onerror = (error) => {
+                log('WebSocket error', 'error');
+            };
+            
+            ws.onclose = () => {
+                log('Disconnected from OpenFunscripter', 'error');
+                statusEl.textContent = 'Disconnected. Make sure OpenFunscripter is running.';
+                statusEl.className = 'status error';
+                
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    log('Reconnecting in 2 seconds... (' + reconnectAttempts + '/' + maxReconnectAttempts + ')', 'info');
+                    setTimeout(connectWebSocket, 2000);
+                }
+            };
+        }
+        
+        connectWebSocket();
+        
+        let currentDevice = null;
+        let currentChar = null;
+        let lastSentPosition = 0;
+        
+        // Command queue to handle GATT operations sequentially
+        let pendingCommand = null;
+        let isSending = false;
+        let lastSentValue = -1;
+        
+        async function processCommandQueue() {
+            if (isSending || pendingCommand === null) {
+                return;
+            }
+            
+            // Skip if same as last sent
+            if (pendingCommand === lastSentValue) {
+                pendingCommand = null;
+                return;
+            }
+            
+            isSending = true;
+            const cmd = pendingCommand;
+            pendingCommand = null;
+            
+            try {
+                const bytes = cmd.split(',').map(x => parseInt(x, 16));
+                await currentChar.writeValue(new Uint8Array(bytes));
+                lastSentValue = cmd;
+                ws.send('OK');
+            } catch (e) {
+                log('Error: ' + e.message, 'error');
+                ws.send('ERROR:' + e.message);
+            } finally {
+                isSending = false;
+                // Process next command if any
+                if (pendingCommand !== null) {
+                    processCommandQueue();
+                }
+            }
+        }
+        
+        // Query device position (using FF command for Hismith)
+        let queryPositionTimeout = null;
+        let lastQueryPosition = -1;
+        
+        function queryDevicePosition() {
+            if (!currentChar || !currentDevice || !currentDevice.gatt || !currentDevice.gatt.connected) {
+                return;
+            }
+            
+            // FF command to query position: 0xFF, 0x09, 0xA0, checksum
+            // checksum = (0x09 + 0xA0) & 0xFF = 0xA9
+            const cmd = 'FF,09,A0,A9';
+            
+            // Only send query if last position was different (debounce)
+            // Actually we need to keep querying to get updates, but we'll filter in the app
+            // Let's just query less frequently to reduce duplicates
+            sendHismithCommand(cmd, true).then(() => {
+                // Schedule next query if still enabled - faster interval to capture more movements
+                if (queryPositionTimeout) {
+                    queryPositionTimeout = setTimeout(queryDevicePosition, 200);
+                }
+            }).catch(e => {
+                log('Query position error: ' + e.message, 'error');
+            });
+        }
+        
+        function handleMessage(msg) {
+            console.log('handleMessage called with:', msg);
+            if (msg === 'PING') {
+                ws.send('PONG');
+            } else if (msg.startsWith('READ:') || msg === 'READ') {
+                // Request to read current device position
+                // Use FF query command for Hismith: 0xFF, 0x09, 0xA0, checksum
+                log('Position read requested - sending query command', 'info');
+                
+                // Start periodic position queries
+                if (queryPositionTimeout) {
+                    clearTimeout(queryPositionTimeout);
+                }
+                queryPositionTimeout = setTimeout(queryDevicePosition, 100);
+            } else if (msg.startsWith('POLL:')) {
+                // Enable/disable position polling
+                const interval = parseInt(msg.substring(5));
+                log('Setting poll interval: ' + interval + 'ms', 'info');
+                setupPolling(interval);
+            } else if (msg.startsWith('SEND:')) {
+                // Debug: log the full message
+                log('DEBUG: Got SEND command: ' + msg, 'info');
+                
+                const data = msg.substring(5);
+                // Also send the command to the device (don't extract position here to avoid duplicate/echo)
+                sendHismithCommand(data, false);
+            } else if (msg.startsWith('LOVENSE:')) {
+                sendLovenseCommand(msg.substring(8));
+            } else if (msg === 'DISCONNECT') {
+                stopPositionPolling();
+                if (currentDevice && currentDevice.gatt && currentDevice.gatt.connected) {
+                    currentDevice.gatt.disconnect();
+                }
+                currentDevice = null;
+                currentChar = null;
+                pendingCommand = null;
+                lastSentValue = -1;
+                document.getElementById('deviceInfo').style.display = 'none';
+                statusEl.textContent = 'Disconnected';
+                statusEl.className = 'status waiting';
+            } else if (msg === 'STOP_QUERY') {
+                // Stop position queries when device-to-script sync is disabled
+                log('Received STOP_QUERY - stopping position queries', 'info');
+                if (queryPositionTimeout) {
+                    clearTimeout(queryPositionTimeout);
+                    queryPositionTimeout = null;
+                }
+            }
+        }
+        
+        async function sendHismithCommand(data) {
+            if (!currentChar) {
+                log('Not connected', 'error');
+                ws.send('ERROR:Not connected');
+                return;
+            }
+            try {
+                const bytes = data.split(',').map(x => parseInt(x, 16));
+                
+                // Use writeWithResponse if available to get acknowledgment
+                try {
+                    await currentChar.writeValueWithResponse(new Uint8Array(bytes));
+                } catch (e) {
+                    // Fall back to regular write
+                    await currentChar.writeValue(new Uint8Array(bytes));
+                }
+                
+                log('Sent Hismith command: ' + data, 'success');
+                ws.send('OK');
+            } catch (e) {
+                log('Error: ' + e.message, 'error');
+                ws.send('ERROR:' + e.message);
+            }
+        }
+        
+        async function sendLovenseCommand(cmd) {
+            if (!currentChar) {
+                log('Not connected', 'error');
+                ws.send('ERROR:Not connected');
+                return;
+            }
+            try {
+                const encoder = new TextEncoder();
+                await currentChar.writeValue(encoder.encode(cmd + ';'));
+                ws.send('OK');
+                log('Sent Lovense command: ' + cmd, 'success');
+            } catch (e) {
+                log('Error: ' + e.message, 'error');
+                ws.send('ERROR:' + e.message);
+            }
+        }
+        
+        // Handle characteristic value changes (device position feedback)
+        function handleCharacteristicChange(event) {
+            const value = event.target.value;
+            const decoder = new TextDecoder();
+            const data = decoder.decode(value);
+            
+            // Log raw data for debugging
+            const bytes = new Uint8Array(value.buffer);
+            log('RAW notification: ' + Array.from(bytes).map(b => '0x' + b.toString(16).padStart(2, '0')).join(', '), 'info');
+            
+            log('Device data: ' + data, 'info');
+            
+            // Try to parse as Hismith response format
+            // AA response: AA,04,XX,YY or AA,03,XX,YY where XX is position
+            if (bytes.length >= 3 && bytes[0] === 0xAA && (bytes[1] === 0x04 || bytes[1] === 0x03)) {
+                const position = bytes[2];
+                log('AA response - position: ' + position, 'info');
+                const clampedPos = Math.max(0, Math.min(100, position));
+                ws.send('POSITION:' + clampedPos);
+                log('Position from AA notification: ' + clampedPos, 'info');
+                return;
+            }
+            
+            // FF response: FF,09,a0,XX,YY - byte[3] is speed. Use it as position.
+            if (bytes.length >= 4 && bytes[0] === 0xFF && bytes[1] === 0x09 && bytes[2] === 0xA0) {
+                const speed = bytes[3];
+                log('DEBUG: FF response - byte[3] is SPEED: ' + speed + '. Using as position.', 'info');
+                if (speed >= 0 && speed <= 100) {
+                    ws.send('POSITION:' + speed);
+                }
+                return;
+            }
+            
+            // Try to extract numeric position value from any data format
+            const match = data.match(/(\d+)/);
+            if (match) {
+                const position = parseInt(match[1], 10);
+                // Send position to OpenFunscripter (clamped to 0-100)
+                const clampedPos = Math.max(0, Math.min(100, position));
+                ws.send('POSITION:' + clampedPos);
+                log('Position: ' + clampedPos, 'info');
+            }
+        }
+        
+        // Poll device position periodically
+        let positionPollInterval = null;
+        let readableChar = null;
+        
+        async function findReadableCharacteristic() {
+            if (!currentDevice || !currentDevice.gatt || !currentDevice.gatt.connected) return null;
+            
+            try {
+                const server = currentDevice.gatt;
+                const services = await server.getPrimaryServices();
+                
+                for (const service of services) {
+                    const chars = await service.getCharacteristics();
+                    log('Service ' + service.uuid + ' has ' + chars.length + ' characteristics', 'info');
+                    
+                    for (const char of chars) {
+                        log('Char ' + char.uuid + ': read=' + char.properties.read + ', notify=' + char.properties.notify + ', write=' + char.properties.write, 'info');
+                        
+                        // Try to enable notifications on ALL characteristics
+                        if (char.properties.notify) {
+                            try {
+                                await char.startNotifications();
+                                char.addEventListener('characteristicvaluechanged', (event) => {
+                                    const value = event.target.value;
+                                    const decoder = new TextDecoder();
+                                    const data = decoder.decode(value);
+                                    log('NOTIFY from ' + char.uuid + ': ' + Array.from(new Uint8Array(value.buffer)).map(b => b.toString(16).padStart(2, '0')).join(','), 'info');
+                                    
+                                // Parse position from raw bytes
+                                    const bytes = new Uint8Array(value.buffer);
+                                    log('NOTIFY raw: ' + Array.from(bytes).map(b => '0x' + b.toString(16).padStart(2, '0')).join(', '), 'info');
+                                    
+                                    if (bytes.length >= 4) {
+                                        // AA command response: AA,04,XX,YY or 03 (knob movement)
+                                        if (bytes[0] === 0xAA && (bytes[1] === 0x04 || bytes[1] === 0x03)) {
+                                            const position = bytes[2];
+                                            log('DEBUG: AA response - byte[2] position: ' + position + ' (raw bytes: ' + Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(',') + ')', 'info');
+                                            if (position >= 0 && position <= 100) {
+                                                ws.send('POSITION:' + position);
+                                                log('Position from AA notification: ' + position, 'info');
+                                            }
+                                        }
+                                        // FF command response: FF,09,a0,XX,YY - byte[3] is SPEED setting, and we use it as position!
+                                        else if (bytes[0] === 0xFF && bytes[1] === 0x09 && bytes[2] === 0xA0) {
+                                            const speed = bytes[3];
+                                            log('DEBUG: FF response - byte[3] is SPEED: ' + speed + '. Using as position.', 'info');
+                                            if (speed >= 0 && speed <= 100) {
+                                                ws.send('POSITION:' + speed);
+                                            }
+                                        }
+                                    }
+                                });
+                                log('Enabled notifications on ' + char.uuid, 'success');
+                            } catch (e) {
+                                log('Cannot notify char ' + char.uuid + ': ' + e.message, 'error');
+                            }
+                        } else {
+                            // Hismith may not have notify property set correctly - try anyway!
+                            try {
+                                await char.startNotifications();
+                                char.addEventListener('characteristicvaluechanged', (event) => {
+                                    const value = event.target.value;
+                                    log('NOTIFY from ' + char.uuid + ': ' + Array.from(new Uint8Array(value.buffer)).map(b => b.toString(16).padStart(2, '0')).join(','), 'info');
+                                    
+                                    const bytes = new Uint8Array(value.buffer);
+                                    if (bytes.length >= 4) {
+                                        // AA command response: AA,04,XX,YY or AA,03,XX,YY (knob movement)
+                                        if (bytes[0] === 0xAA && (bytes[1] === 0x04 || bytes[1] === 0x03)) {
+                                            const position = bytes[2];
+                                            log('DEBUG: AA response - byte[2] position: ' + position + ' (raw bytes: ' + Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(',') + ')', 'info');
+                                            if (position >= 0 && position <= 100) {
+                                                ws.send('POSITION:' + position);
+                                                log('Position from AA notification: ' + position, 'info');
+                                            }
+                                        }
+                                        // FF command response: FF,09,a0,XX,YY - byte[3] is SPEED setting, and we use it!
+                                        else if (bytes[0] === 0xFF && bytes[1] === 0x09 && bytes[2] === 0xA0) {
+                                            const speed = bytes[3];
+                                            log('DEBUG: FF response - byte[3] is SPEED: ' + speed + '. Using as position.', 'info');
+                                            if (speed >= 0 && speed <= 100) {
+                                                ws.send('POSITION:' + speed);
+                                            }
+                                        }
+                                    }
+                                });
+                                log('Forced notifications on ' + char.uuid, 'success');
+                            } catch (e) {
+                                // Silent fail for write-only chars
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                log('Error finding characteristics: ' + e.message, 'error');
+            }
+            return null;
+        }
+        
+        function startPositionPolling() {
+            // First, try to find readable/notifiable characteristics for notifications
+            findReadableCharacteristic().then(char => {
+                if (char) {
+                    readableChar = char;
+                    log('Found readable/notifiable characteristic', 'success');
+                } else {
+                    log('No readable characteristic found, using query-based position', 'info');
+                }
+            });
+            
+            // Note: Hismith BLE doesn't support GATT read operations.
+            // Position is obtained via notifications or command responses.
+            // We don't use interval polling here - queries are triggered by the READ command.
+            log('Position polling ready - awaiting READ command for queries', 'info');
+        }
+        
+        function stopPositionPolling() {
+            if (positionPollInterval) {
+                clearInterval(positionPollInterval);
+                positionPollInterval = null;
+                log('Stopped position polling', 'info');
+            }
+            // Also stop position queries
+            if (queryPositionTimeout) {
+                clearTimeout(queryPositionTimeout);
+                queryPositionTimeout = null;
+                log('Stopped position queries', 'info');
+            }
+        }
+        
+        function setupPolling(intervalMs) {
+            // Stop existing polling if any
+            stopPositionPolling();
+            
+            if (intervalMs <= 0) {
+                log('Position polling disabled', 'info');
+                return;
+            }
+            
+            // Start continuous position queries at the specified interval
+            // Use FF command to query device state
+            log('Starting position polling at ' + intervalMs + 'ms interval using FF query', 'info');
+            
+            // Start the query loop using FF command
+            if (queryPositionTimeout) {
+                clearTimeout(queryPositionTimeout);
+            }
+            queryPositionTimeout = setTimeout(queryDevicePosition, intervalMs);
+        }
+        
+        document.getElementById('scanBtn').addEventListener('click', async () => {
+            if (!navigator.bluetooth) {
+                statusEl.textContent = 'Web Bluetooth not available. Use Chrome or Edge.';
+                statusEl.className = 'status error';
+                log('Web Bluetooth not available', 'error');
+                return;
+            }
+            
+            statusEl.textContent = 'Opening device selection...';
+            statusEl.className = 'status scanning';
+            log('Opening device selection dialog...', 'info');
+            
+            try {
+                const device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: [
+                        '0000ffe0-0000-1000-8000-00805f9b34fb',
+                        '0000ffe1-0000-1000-8000-00805f9b34fb',
+                        '0000ffe5-0000-1000-8000-00805f9b34fb',  // Hismith
+                        '0000fff0-0000-1000-8000-00805f9b34fb',
+                        '0000ffb0-0000-1000-8000-00805f9b34fb',  // Lovense Gen1
+                        '6e400001-b5a3-f393-e0a9-e50e24dcca9e'   // Lovense Nordic
+                    ]
+                });
+                
+                currentDevice = device;
+                const deviceName = device.name || 'Unknown Device';
+                
+                document.getElementById('deviceName').textContent = deviceName;
+                document.getElementById('deviceInfo').style.display = 'block';
+                
+                log('Device selected: ' + deviceName, 'success');
+                ws.send('DEVICE:' + deviceName);
+                
+                // Connect to GATT
+                statusEl.textContent = 'Connecting to GATT...';
+                log('Connecting to GATT server...', 'info');
+                
+                try {
+                    const server = await device.gatt.connect();
+                    statusEl.textContent = 'GATT Connected';
+                    log('GATT Connected', 'success');
+                    ws.send('GATT_CONNECTED');
+                    
+                    // Find writable characteristic
+                    const services = await server.getPrimaryServices();
+                    log('Found ' + services.length + ' services', 'info');
+                    
+                    let foundChar = null;
+                    let serviceInfo = '';
+                    
+                    for (const service of services) {
+                        serviceInfo += service.uuid + ' ';
+                        const chars = await service.getCharacteristics();
+                        for (const char of chars) {
+                            if (char.properties.write || char.properties.writeWithoutResponse) {
+                                foundChar = char;
+                                log('Found writable characteristic: ' + char.uuid, 'success');
+                                break;
+                            }
+                        }
+                        if (foundChar) break;
+                    }
+                    
+                    if (foundChar) {
+                        currentChar = foundChar;
+                        
+                        statusEl.textContent = 'Connected! Ready to control.';
+                        statusEl.className = 'status connected';
+                        log('Ready! Device is connected and ready.', 'success');
+                        ws.send('READY:' + foundChar.uuid);
+                        
+                        // Start position polling after connection
+                        startPositionPolling();
+                        
+                        // Notify app
+                        setTimeout(() => ws.send('CONNECTED'), 500);
+                    } else {
+                        log('No writable characteristic found. Services: ' + serviceInfo, 'error');
+                        ws.send('ERROR:No writable characteristic');
+                        statusEl.textContent = 'Error: No writable characteristic';
+                        statusEl.className = 'status error';
+                    }
+                } catch (e) {
+                    log('GATT Error: ' + e.message, 'error');
+                    ws.send('ERROR:' + e.message);
+                    statusEl.textContent = 'Error: ' + e.message;
+                    statusEl.className = 'status error';
+                }
+            } catch (e) {
+                log('Selection error: ' + e.message, 'error');
+                ws.send('ERROR:' + e.message);
+                statusEl.textContent = 'Error: ' + e.message;
+                statusEl.className = 'status error';
+            }
+        });
+    </script>
+</body>
+</html>
