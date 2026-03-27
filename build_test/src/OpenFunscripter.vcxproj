@@ -1,0 +1,623 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6280D888-B6D1-30FF-9764-B2C04EE4E0CC}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>OpenFunscripter</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Games\video\OpenFunscripter\bin\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">OpenFunscripter.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">OpenFunscripter</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Games\video\OpenFunscripter\bin\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">OpenFunscripter.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">OpenFunscripter</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Games\video\OpenFunscripter\bin\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">OpenFunscripter.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">OpenFunscripter</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Games\video\OpenFunscripter\bin\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">OpenFunscripter.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">OpenFunscripter</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-debug\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Games/video/OpenFunscripter/lib/sol2/include"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;OFS_LATEST_GIT_TAG="v5.12.0";OFS_LATEST_GIT_HASH="57f299e9";IMGUI_IMPL_OPENGL_LOADER_GLAD2;MPV_ENABLE_DEPRECATED=0;OFS_PROFILE_ENABLED=0;NOMINMAX;IMGUI_USE_STB_SPRINTF;IMGUI_DEFINE_MATH_OPERATORS=1;IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1;IMGUI_DISABLE_OBSOLETE_KEYIO=1;GGML_USE_CPU;GGML_SHARED;GGML_BACKEND_SHARED;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;OFS_LATEST_GIT_TAG=\"v5.12.0\";OFS_LATEST_GIT_HASH=\"57f299e9\";IMGUI_IMPL_OPENGL_LOADER_GLAD2;MPV_ENABLE_DEPRECATED=0;OFS_PROFILE_ENABLED=0;NOMINMAX;IMGUI_USE_STB_SPRINTF;IMGUI_DEFINE_MATH_OPERATORS=1;IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1;IMGUI_DISABLE_OBSOLETE_KEYIO=1;GGML_USE_CPU;GGML_SHARED;GGML_BACKEND_SHARED;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-debug\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;D:\Games\video\OpenFunscripter\lib\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-debug\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;D:\Games\video\OpenFunscripter\lib\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PreBuildEvent>
+      <Message>		</Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory D:/Games/video/OpenFunscripter/data/ D:/Games/video/OpenFunscripter/bin/Debug/data
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+cd D:\Games\video\OpenFunscripter\build_test
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+D:\Games\video\OpenFunscripter\build_test\7zr.exe x -y mpv-dev.7z mpv-2.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy D:/Games/video/OpenFunscripter/build_test/mpv-2.dll D:/Games/video/OpenFunscripter/bin/Debug/mpv-2.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\lib\Debug\lua.lib;..\OFS-lib\Debug\OFS_lib.lib;..\lib\Debug\civetweb.lib;..\lib\whisper.cpp\src\Debug\whisper.lib;..\lib\SDL2\Debug\SDL2-staticd.lib;kernel32.lib;user32.lib;gdi32.lib;winmm.lib;imm32.lib;ole32.lib;oleaut32.lib;version.lib;uuid.lib;advapi32.lib;setupapi.lib;..\lib\SDL2\Debug\SDL2maind.lib;shell32.lib;..\lib\Debug\glad2.lib;..\lib\Debug\imgui_stdlib.lib;..\lib\Debug\imgui.lib;..\lib\Debug\tinyfiledialogs.lib;..\lib\whisper.cpp\ggml\src\Debug\ggml.lib;..\lib\whisper.cpp\ggml\src\Debug\ggml-cpu.lib;..\lib\whisper.cpp\ggml\src\Debug\ggml-base.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>D:/Games/video/OpenFunscripter/build_test/src/Debug/OpenFunscripter.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>D:/Games/video/OpenFunscripter/bin/Debug/OpenFunscripter.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-release\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Games/video/OpenFunscripter/lib/sol2/include"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;OFS_LATEST_GIT_TAG="v5.12.0";OFS_LATEST_GIT_HASH="57f299e9";IMGUI_IMPL_OPENGL_LOADER_GLAD2;MPV_ENABLE_DEPRECATED=0;OFS_PROFILE_ENABLED=0;NOMINMAX;IMGUI_USE_STB_SPRINTF;IMGUI_DEFINE_MATH_OPERATORS=1;IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1;IMGUI_DISABLE_OBSOLETE_KEYIO=1;GGML_USE_CPU;GGML_SHARED;GGML_BACKEND_SHARED;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;OFS_LATEST_GIT_TAG=\"v5.12.0\";OFS_LATEST_GIT_HASH=\"57f299e9\";IMGUI_IMPL_OPENGL_LOADER_GLAD2;MPV_ENABLE_DEPRECATED=0;OFS_PROFILE_ENABLED=0;NOMINMAX;IMGUI_USE_STB_SPRINTF;IMGUI_DEFINE_MATH_OPERATORS=1;IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1;IMGUI_DISABLE_OBSOLETE_KEYIO=1;GGML_USE_CPU;GGML_SHARED;GGML_BACKEND_SHARED;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-release\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;D:\Games\video\OpenFunscripter\lib\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-release\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;D:\Games\video\OpenFunscripter\lib\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PreBuildEvent>
+      <Message>		</Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory D:/Games/video/OpenFunscripter/data/ D:/Games/video/OpenFunscripter/bin/Release/data
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+cd D:\Games\video\OpenFunscripter\build_test
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+D:\Games\video\OpenFunscripter\build_test\7zr.exe x -y mpv-dev.7z mpv-2.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy D:/Games/video/OpenFunscripter/build_test/mpv-2.dll D:/Games/video/OpenFunscripter/bin/Release/mpv-2.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\lib\Release\lua.lib;..\OFS-lib\Release\OFS_lib.lib;..\lib\Release\civetweb.lib;..\lib\whisper.cpp\src\Release\whisper.lib;..\lib\SDL2\Release\SDL2-static.lib;kernel32.lib;user32.lib;gdi32.lib;winmm.lib;imm32.lib;ole32.lib;oleaut32.lib;version.lib;uuid.lib;advapi32.lib;setupapi.lib;..\lib\SDL2\Release\SDL2main.lib;shell32.lib;..\lib\Release\glad2.lib;..\lib\Release\imgui_stdlib.lib;..\lib\Release\imgui.lib;..\lib\Release\tinyfiledialogs.lib;..\lib\whisper.cpp\ggml\src\Release\ggml.lib;..\lib\whisper.cpp\ggml\src\Release\ggml-cpu.lib;..\lib\whisper.cpp\ggml\src\Release\ggml-base.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>D:/Games/video/OpenFunscripter/build_test/src/Release/OpenFunscripter.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>D:/Games/video/OpenFunscripter/bin/Release/OpenFunscripter.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-minsizerel\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Games/video/OpenFunscripter/lib/sol2/include"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;OFS_LATEST_GIT_TAG="v5.12.0";OFS_LATEST_GIT_HASH="57f299e9";IMGUI_IMPL_OPENGL_LOADER_GLAD2;MPV_ENABLE_DEPRECATED=0;OFS_PROFILE_ENABLED=0;NOMINMAX;IMGUI_USE_STB_SPRINTF;IMGUI_DEFINE_MATH_OPERATORS=1;IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1;IMGUI_DISABLE_OBSOLETE_KEYIO=1;GGML_USE_CPU;GGML_SHARED;GGML_BACKEND_SHARED;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;OFS_LATEST_GIT_TAG=\"v5.12.0\";OFS_LATEST_GIT_HASH=\"57f299e9\";IMGUI_IMPL_OPENGL_LOADER_GLAD2;MPV_ENABLE_DEPRECATED=0;OFS_PROFILE_ENABLED=0;NOMINMAX;IMGUI_USE_STB_SPRINTF;IMGUI_DEFINE_MATH_OPERATORS=1;IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1;IMGUI_DISABLE_OBSOLETE_KEYIO=1;GGML_USE_CPU;GGML_SHARED;GGML_BACKEND_SHARED;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-minsizerel\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;D:\Games\video\OpenFunscripter\lib\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-minsizerel\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;D:\Games\video\OpenFunscripter\lib\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PreBuildEvent>
+      <Message>		</Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory D:/Games/video/OpenFunscripter/data/ D:/Games/video/OpenFunscripter/bin/MinSizeRel/data
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+cd D:\Games\video\OpenFunscripter\build_test
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+D:\Games\video\OpenFunscripter\build_test\7zr.exe x -y mpv-dev.7z mpv-2.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy D:/Games/video/OpenFunscripter/build_test/mpv-2.dll D:/Games/video/OpenFunscripter/bin/MinSizeRel/mpv-2.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\lib\MinSizeRel\lua.lib;..\OFS-lib\MinSizeRel\OFS_lib.lib;..\lib\MinSizeRel\civetweb.lib;..\lib\whisper.cpp\src\MinSizeRel\whisper.lib;..\lib\SDL2\MinSizeRel\SDL2-static.lib;kernel32.lib;user32.lib;gdi32.lib;winmm.lib;imm32.lib;ole32.lib;oleaut32.lib;version.lib;uuid.lib;advapi32.lib;setupapi.lib;..\lib\SDL2\MinSizeRel\SDL2main.lib;shell32.lib;..\lib\MinSizeRel\glad2.lib;..\lib\MinSizeRel\imgui_stdlib.lib;..\lib\MinSizeRel\imgui.lib;..\lib\MinSizeRel\tinyfiledialogs.lib;..\lib\whisper.cpp\ggml\src\MinSizeRel\ggml.lib;..\lib\whisper.cpp\ggml\src\MinSizeRel\ggml-cpu.lib;..\lib\whisper.cpp\ggml\src\MinSizeRel\ggml-base.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>D:/Games/video/OpenFunscripter/build_test/src/MinSizeRel/OpenFunscripter.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>D:/Games/video/OpenFunscripter/bin/MinSizeRel/OpenFunscripter.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-relwithdebinfo\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Games/video/OpenFunscripter/lib/sol2/include"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;OFS_LATEST_GIT_TAG="v5.12.0";OFS_LATEST_GIT_HASH="57f299e9";IMGUI_IMPL_OPENGL_LOADER_GLAD2;MPV_ENABLE_DEPRECATED=0;OFS_PROFILE_ENABLED=0;NOMINMAX;IMGUI_USE_STB_SPRINTF;IMGUI_DEFINE_MATH_OPERATORS=1;IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1;IMGUI_DISABLE_OBSOLETE_KEYIO=1;GGML_USE_CPU;GGML_SHARED;GGML_BACKEND_SHARED;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;OFS_LATEST_GIT_TAG=\"v5.12.0\";OFS_LATEST_GIT_HASH=\"57f299e9\";IMGUI_IMPL_OPENGL_LOADER_GLAD2;MPV_ENABLE_DEPRECATED=0;OFS_PROFILE_ENABLED=0;NOMINMAX;IMGUI_USE_STB_SPRINTF;IMGUI_DEFINE_MATH_OPERATORS=1;IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1;IMGUI_DISABLE_OBSOLETE_KEYIO=1;GGML_USE_CPU;GGML_SHARED;GGML_BACKEND_SHARED;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-relwithdebinfo\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;D:\Games\video\OpenFunscripter\lib\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\src;D:\Games\video\OpenFunscripter\src\UI;D:\Games\video\OpenFunscripter\src\Funscript;D:\Games\video\OpenFunscripter\src\gl;D:\Games\video\OpenFunscripter\src\event;D:\Games\video\OpenFunscripter\src\lua;D:\Games\video\OpenFunscripter\src\api;D:\Games\video\OpenFunscripter\src\device;D:\Games\video\OpenFunscripter\src\util;D:\Games\video\OpenFunscripter\lib\whisper.cpp\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\include;D:\Games\video\OpenFunscripter\lib\lua;D:\Games\video\OpenFunscripter\OFS-lib\event;D:\Games\video\OpenFunscripter\OFS-lib\Funscript;D:\Games\video\OpenFunscripter\OFS-lib\UI;D:\Games\video\OpenFunscripter\OFS-lib\imgui_impl;D:\Games\video\OpenFunscripter\OFS-lib\gl;D:\Games\video\OpenFunscripter\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\player;D:\Games\video\OpenFunscripter\OFS-lib\localization;D:\Games\video\OpenFunscripter\OFS-lib\videoplayer;D:\Games\video\OpenFunscripter\OFS-lib\state;D:\Games\video\OpenFunscripter\build_test\OFS-lib;D:\Games\video\OpenFunscripter\OFS-lib\..\lib\libmpv\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include\SDL2;D:\Games\video\OpenFunscripter\build_test\lib\SDL2\include-config-relwithdebinfo\SDL2;D:\Games\video\OpenFunscripter\lib\json\include;D:\Games\video\OpenFunscripter\lib\glad2\include;D:\Games\video\OpenFunscripter\lib\imgui;D:\Games\video\OpenFunscripter\lib\stb;D:\Games\video\OpenFunscripter\lib\imgui\misc\cpp;D:\Games\video\OpenFunscripter\lib\tinyfiledialogs;D:\Games\video\OpenFunscripter\lib\glm\glm\..;D:\Games\video\OpenFunscripter\lib\bitsery\include;D:\Games\video\OpenFunscripter\lib\refl-cpp\include;D:\Games\video\OpenFunscripter\lib\eventpp\include;D:\Games\video\OpenFunscripter\lib\civetweb\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\src\..\include;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;D:\Games\video\OpenFunscripter\lib\sol2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PreBuildEvent>
+      <Message>		</Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_directory D:/Games/video/OpenFunscripter/data/ D:/Games/video/OpenFunscripter/bin/RelWithDebInfo/data
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+cd D:\Games\video\OpenFunscripter\build_test
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+D:\Games\video\OpenFunscripter\build_test\7zr.exe x -y mpv-dev.7z mpv-2.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy D:/Games/video/OpenFunscripter/build_test/mpv-2.dll D:/Games/video/OpenFunscripter/bin/RelWithDebInfo/mpv-2.dll
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\lib\RelWithDebInfo\lua.lib;..\OFS-lib\RelWithDebInfo\OFS_lib.lib;..\lib\RelWithDebInfo\civetweb.lib;..\lib\whisper.cpp\src\RelWithDebInfo\whisper.lib;..\lib\SDL2\RelWithDebInfo\SDL2-static.lib;kernel32.lib;user32.lib;gdi32.lib;winmm.lib;imm32.lib;ole32.lib;oleaut32.lib;version.lib;uuid.lib;advapi32.lib;setupapi.lib;..\lib\SDL2\RelWithDebInfo\SDL2main.lib;shell32.lib;..\lib\RelWithDebInfo\glad2.lib;..\lib\RelWithDebInfo\imgui_stdlib.lib;..\lib\RelWithDebInfo\imgui.lib;..\lib\RelWithDebInfo\tinyfiledialogs.lib;..\lib\whisper.cpp\ggml\src\RelWithDebInfo\ggml.lib;..\lib\whisper.cpp\ggml\src\RelWithDebInfo\ggml-cpu.lib;..\lib\whisper.cpp\ggml\src\RelWithDebInfo\ggml-base.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>D:/Games/video/OpenFunscripter/build_test/src/RelWithDebInfo/OpenFunscripter.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>D:/Games/video/OpenFunscripter/bin/RelWithDebInfo/OpenFunscripter.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Games\video\OpenFunscripter\src\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/Games/video/OpenFunscripter/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Games/video/OpenFunscripter -BD:/Games/video/OpenFunscripter/build_test --check-stamp-file D:/Games/video/OpenFunscripter/build_test/src/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Games\video\OpenFunscripter\build_test\CMakeFiles\cmake.verify_globs;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Games\video\OpenFunscripter\build_test\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/Games/video/OpenFunscripter/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Games/video/OpenFunscripter -BD:/Games/video/OpenFunscripter/build_test --check-stamp-file D:/Games/video/OpenFunscripter/build_test/src/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Games\video\OpenFunscripter\build_test\CMakeFiles\cmake.verify_globs;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Games\video\OpenFunscripter\build_test\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/Games/video/OpenFunscripter/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Games/video/OpenFunscripter -BD:/Games/video/OpenFunscripter/build_test --check-stamp-file D:/Games/video/OpenFunscripter/build_test/src/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Games\video\OpenFunscripter\build_test\CMakeFiles\cmake.verify_globs;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Games\video\OpenFunscripter\build_test\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/Games/video/OpenFunscripter/src/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/Games/video/OpenFunscripter -BD:/Games/video/OpenFunscripter/build_test --check-stamp-file D:/Games/video/OpenFunscripter/build_test/src/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Games\video\OpenFunscripter\build_test\CMakeFiles\cmake.verify_globs;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Games\video\OpenFunscripter\build_test\src\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\main.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\OpenFunscripter.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\OFS_ScriptingMode.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\OFS_Project.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\OFS_UndoSystem.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\UI\OFS_Preferences.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\UI\OFS_ScriptSimulator.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\UI\OFS_SpecialFunctions.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\UI\OFS_ScriptPositionsOverlays.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\UI\OFS_DownloadFfmpeg.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\UI\OFS_FunscriptMetadataEditor.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\UI\OFS_ChapterManager.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\UI\OFS_PatternPicker.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\api\OFS_WebsocketApi.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\api\OFS_WebsocketApiClient.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\api\OFS_WebsocketApiEvents.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\api\OFS_WebsocketApiCommands.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\api\OFS_BluetoothWebSocketClient.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\gl\OFS_GPU.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\state\OpenFunscripterState.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\lua\OFS_LuaExtensions.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\lua\OFS_LuaExtension.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\lua\OFS_LuaCoreExtension.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\lua\OFS_LuaExtensionAPI.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\lua\api\OFS_LuaPlayerAPI.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\lua\api\OFS_LuaImGuiAPI.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\lua\api\OFS_LuaScriptAPI.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\lua\api\OFS_LuaProcessAPI.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\device\OFS_DeviceManager.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\device\OFS_DevicePanel.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\device\adapters\OFS_HandyAdapter.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\device\adapters\OFS_LovenseAdapter.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\device\adapters\OFS_HismithAdapter.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\device\adapters\OFS_BluetoothLEAdapter.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\util\OFS_HttpClient.cpp" />
+    <ClCompile Include="D:\Games\video\OpenFunscripter\src\util\OFS_VoiceInput.cpp" />
+    <ResourceCompile Include="D:\Games\video\OpenFunscripter\icon.rc" />
+    <Natvis Include="D:\Games\video\OpenFunscripter\lib\json\nlohmann_json.natvis">
+    </Natvis>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\ZERO_CHECK.vcxproj">
+      <Project>{4C69E5CA-E62C-3CBF-928B-AD5FAE46F002}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\OFS-lib\OFS_lib.vcxproj">
+      <Project>{00DA4248-F21F-33F2-B716-12C92886CA2D}</Project>
+      <Name>OFS_lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\SDL2\SDL2-static.vcxproj">
+      <Project>{725FEE3F-B903-387D-9796-913180F6AFC4}</Project>
+      <Name>SDL2-static</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\SDL2\SDL2main.vcxproj">
+      <Project>{858A4382-28ED-3548-B167-83001DA5C488}</Project>
+      <Name>SDL2main</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\civetweb.vcxproj">
+      <Project>{0FBD9BC0-82D8-3399-9004-953139A210FF}</Project>
+      <Name>civetweb</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\whisper.cpp\ggml\src\ggml.vcxproj">
+      <Project>{A2690EC6-BDF5-30BA-8866-2D0CB5A22807}</Project>
+      <Name>ggml</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\whisper.cpp\ggml\src\ggml-base.vcxproj">
+      <Project>{627CF7AB-E004-38C0-96D5-D576790E6BE6}</Project>
+      <Name>ggml-base</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\whisper.cpp\ggml\src\ggml-cpu.vcxproj">
+      <Project>{2B10BF9C-9B9F-3FAB-B900-60880082F216}</Project>
+      <Name>ggml-cpu</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\glad2.vcxproj">
+      <Project>{16EDAE1C-AE00-32EB-ACDC-AA2269BFA638}</Project>
+      <Name>glad2</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\imgui.vcxproj">
+      <Project>{23B6FFCD-50D6-3035-B8BD-BE26000A42F1}</Project>
+      <Name>imgui</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\imgui_stdlib.vcxproj">
+      <Project>{7ABF9DDD-671A-3484-9524-505618753B78}</Project>
+      <Name>imgui_stdlib</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\lua.vcxproj">
+      <Project>{1F1E3B28-BB4C-357F-872F-591E52484816}</Project>
+      <Name>lua</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\tinyfiledialogs.vcxproj">
+      <Project>{31C36BF1-AA28-3A1B-A8FA-4FAAD6264D91}</Project>
+      <Name>tinyfiledialogs</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Games\video\OpenFunscripter\build_test\lib\whisper.cpp\src\whisper.vcxproj">
+      <Project>{D32394D4-67D5-3E9E-B939-610A0F84A386}</Project>
+      <Name>whisper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

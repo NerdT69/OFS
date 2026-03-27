@@ -80,10 +80,7 @@ int Util::OpenUrl(const std::string& url)
 {
 #if defined(WIN32)
     std::wstring wstr = Util::Utf8ToUtf16(url);
-    std::wstringstream ss;
-    ss << L'"' << wstr << L'"';
-    auto params = ss.str();
-    return WindowsShellExecute(L"open", params.c_str(), NULL);
+    return WindowsShellExecute(NULL, wstr.c_str(), NULL);
 #elif defined(__APPLE__)
     LOG_ERROR("Not implemented for this platform.");
     return 1;

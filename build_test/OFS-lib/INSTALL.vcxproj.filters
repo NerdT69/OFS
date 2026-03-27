@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Games\video\OpenFunscripter\build_test\CMakeFiles\70f5f9415321553c7638db96546e4c37\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CBB4F1B9-4AAA-3460-8932-D1C8F4423E56}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

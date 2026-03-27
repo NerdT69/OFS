@@ -1,0 +1,1 @@
+D:/Games/video/OpenFunscripter/build_test/lib/whisper.cpp/src/whisper.dir/RelWithDebInfo/whisper.obj
