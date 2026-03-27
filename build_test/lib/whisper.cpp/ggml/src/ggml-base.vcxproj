@@ -111,12 +111,12 @@
       <SupportJustMyCode></SupportJustMyCode>
       <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;GGML_BUILD;GGML_SHARED;GGML_VERSION="0.9.8";GGML_COMMIT="57f299e9";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug";ggml_base_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;GGML_BUILD;GGML_SHARED;GGML_VERSION="0.9.8";GGML_COMMIT="e92f942";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug";ggml_base_EXPORTS</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;GGML_BUILD;GGML_SHARED;GGML_VERSION=\"0.9.8\";GGML_COMMIT=\"57f299e9\";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Debug\";ggml_base_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;GGML_BUILD;GGML_SHARED;GGML_VERSION=\"0.9.8\";GGML_COMMIT=\"e92f942\";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Debug\";ggml_base_EXPORTS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -171,14 +171,14 @@
       <SupportJustMyCode></SupportJustMyCode>
       <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION="0.9.8";GGML_COMMIT="57f299e9";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Release";ggml_base_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION="0.9.8";GGML_COMMIT="e92f942";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Release";ggml_base_EXPORTS</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION=\"0.9.8\";GGML_COMMIT=\"57f299e9\";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Release\";ggml_base_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION=\"0.9.8\";GGML_COMMIT=\"e92f942\";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Release\";ggml_base_EXPORTS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -233,14 +233,14 @@
       <SupportJustMyCode></SupportJustMyCode>
       <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION="0.9.8";GGML_COMMIT="57f299e9";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="MinSizeRel";ggml_base_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION="0.9.8";GGML_COMMIT="e92f942";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="MinSizeRel";ggml_base_EXPORTS</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION=\"0.9.8\";GGML_COMMIT=\"57f299e9\";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"MinSizeRel\";ggml_base_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION=\"0.9.8\";GGML_COMMIT=\"e92f942\";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"MinSizeRel\";ggml_base_EXPORTS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -296,12 +296,12 @@
       <SupportJustMyCode></SupportJustMyCode>
       <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
       <UseFullPaths>false</UseFullPaths>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION="0.9.8";GGML_COMMIT="57f299e9";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="RelWithDebInfo";ggml_base_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION="0.9.8";GGML_COMMIT="e92f942";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="RelWithDebInfo";ggml_base_EXPORTS</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION=\"0.9.8\";GGML_COMMIT=\"57f299e9\";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"RelWithDebInfo\";ggml_base_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GGML_BUILD;GGML_SHARED;GGML_VERSION=\"0.9.8\";GGML_COMMIT=\"e92f942\";_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR;GGML_SCHED_MAX_COPIES=4;_XOPEN_SOURCE=600;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"RelWithDebInfo\";ggml_base_EXPORTS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\.;D:\Games\video\OpenFunscripter\lib\whisper.cpp\ggml\src\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>

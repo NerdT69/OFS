@@ -90,7 +90,8 @@ find_package(Git)
 
 # Try to get git tag, use default if no tags exist
 execute_process(
-    COMMAND ${GIT_EXECUTABLE} --git-dir=${CMAKE_SOURCE_DIR}/.git describe --abbrev=0 --tags
+    COMMAND ${GIT_EXECUTABLE} describe --abbrev=0 --tags
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     RESULT_VARIABLE result
     OUTPUT_VARIABLE LATEST_GIT_TAG
     OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -101,7 +102,8 @@ if(result OR LATEST_GIT_TAG STREQUAL "")
 endif()
 
 execute_process(
-    COMMAND ${GIT_EXECUTABLE} --git-dir=${CMAKE_SOURCE_DIR}/.git rev-parse --short HEAD
+    COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     RESULT_VARIABLE result
     OUTPUT_VARIABLE LATEST_GIT_HASH
     OUTPUT_STRIP_TRAILING_WHITESPACE)
