@@ -1,6 +1,7 @@
 .vs
 .cache
 build
+build_test
 build_app
 out
 bin
