@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include "SDL_rwops.h"
+#include "SDL_misc.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -78,17 +79,7 @@ int Util::OpenFileExplorer(const std::string& str)
 
 int Util::OpenUrl(const std::string& url)
 {
-#if defined(WIN32)
-    std::wstring wstr = Util::Utf8ToUtf16(url);
-    return WindowsShellExecute(NULL, wstr.c_str(), NULL);
-#elif defined(__APPLE__)
-    LOG_ERROR("Not implemented for this platform.");
-    return 1;
-#else
-    char tmp[1024];
-    stbsp_snprintf(tmp, sizeof(tmp), "xdg-open \"%s\"", url.c_str());
-    return std::system(tmp);
-#endif
+    return SDL_OpenURL(url.c_str());
 }
 
 void Util::OpenFileDialog(const std::string& title, const std::string& path, FileDialogResultHandler&& handler, bool multiple, const std::vector<const char*>& filters, const std::string& filterText) noexcept

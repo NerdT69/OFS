@@ -115,7 +115,7 @@ void ScriptTimeline::videoLoaded(const VideoLoadedEvent* ev) noexcept
 	if(waveCache.Filename == videoPath && !samples.empty())
 	{
 		Wave.data.SetSamples(std::move(samples));
-		ShowAudioWaveform = true;
+		// Don't auto-enable waveform - respect user's persisted preference
 	}
 	else 
 	{

@@ -155,11 +155,13 @@ target_include_directories(eventpp INTERFACE "eventpp/include/")
 set (civetweb_SRC
 	"civetweb/src/civetweb.c" 
 )
-set_source_files_properties("civetweb/src/civetweb.c" PROPERTIES LANGUAGE CXX )
+# Force C language and disable atomics to fix interlocked intrinsic type mismatch
+set_source_files_properties("civetweb/src/civetweb.c" PROPERTIES LANGUAGE C)
 add_library(civetweb STATIC ${civetweb_SRC})
 target_include_directories(civetweb PUBLIC "civetweb/include/")
 target_compile_definitions(civetweb PRIVATE "NO_SSL=1"
-											"USE_WEBSOCKET=1")
+											"USE_WEBSOCKET=1"
+											"NO_ATOMICS=1")
 
 # ============
 # == Whisper ==

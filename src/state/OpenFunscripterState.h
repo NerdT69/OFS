@@ -56,6 +56,7 @@ struct OpenFunscripterState
     bool showPatternsWindow = false;
     bool showDevicePanel = false;
     bool showVoiceInputPanel = true;
+    bool showWaveform = false;
 
     PatternLayout patternLayout;
 
@@ -98,6 +99,7 @@ REFL_TYPE(OpenFunscripterState)
     REFL_FIELD(showPatternsWindow)
     REFL_FIELD(showDevicePanel)
     REFL_FIELD(showVoiceInputPanel)
+    REFL_FIELD(showWaveform)
     REFL_FIELD(patternLayout)
     REFL_FIELD(actionEditorPositions)
 REFL_END

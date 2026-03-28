@@ -431,6 +431,7 @@ void OFS_Videoplayer::OpenVideo(const std::string& path) noexcept
     MpvDataCache newCache;
     newCache.currentSpeed = CTX->data.currentSpeed;
     newCache.paused = CTX->data.paused;
+    newCache.currentVolume = CTX->data.currentVolume;
     CTX->data = newCache;
 
     SetPaused(true);

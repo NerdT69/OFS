@@ -1,1 +1,0 @@
-D:/Games/video/OpenFunscripter/build_test/lib/whisper.cpp/src/whisper.dir/MinSizeRel/whisper.obj

@@ -495,7 +495,7 @@ enum class Tr : uint32_t
 	VALIDATE,
 	OK_RESULT,
 	ORPHAN_TRIGGER_MESSAGE,
-	DELETE,
+	REMOVE_ITEM,
 	REPEAT,
 	WEBSOCKET_API,
 	SERVER_ACTIVE,
@@ -535,6 +535,8 @@ enum class Tr : uint32_t
 	SELECTION_EMPTY,
 	MAX_STRING_COUNT
 };
+
+// Note: DELETE was intentionally not used as enum name to avoid Windows.h macro conflict
 
 struct OFS_DefaultStrings
 {

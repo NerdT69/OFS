@@ -6,6 +6,7 @@
 #include "ProjectState.h"
 #include "SpecialFunctionsState.h"
 #include "WebsocketApiState.h"
+#include "DeviceState.h"
 
 void OpenFunscripterState::RegisterAll() noexcept
 {
@@ -17,6 +18,7 @@ void OpenFunscripterState::RegisterAll() noexcept
 	OFS_REGISTER_STATE(SimulatorDefaultConfigState);
 	OFS_REGISTER_STATE(SpecialFunctionState);
 	OFS_REGISTER_STATE(WebsocketApiState);
+	OFS_REGISTER_STATE(DeviceState);
 
 	// Project state
 	OFS_REGISTER_STATE(TempoOverlayState);

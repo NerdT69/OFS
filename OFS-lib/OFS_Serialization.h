@@ -40,12 +40,13 @@ namespace OFS {
     template<>
     struct is_json_compatible<int8_t>: std::true_type {
     };
-    // template<> // This is the same as size_t
-    // struct is_json_compatible<uint64_t>: std::true_type {
-    // };
+    // Skip uint32_t on 32-bit builds where it's the same as size_t
+    // to avoid the duplicate specialization error
+    #if INTPTR_MAX != INT32_MAX
     template<>
     struct is_json_compatible<uint32_t>: std::true_type {
     };
+    #endif
     template<>
     struct is_json_compatible<uint16_t>: std::true_type {
     };

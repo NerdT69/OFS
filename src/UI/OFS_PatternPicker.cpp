@@ -325,7 +325,7 @@ void PatternPicker::ShowPatternsWindow(bool* open) noexcept
                     }
                 }
                 
-                if (ImGui::MenuItem(TR(DELETE))) {
+                if (ImGui::MenuItem(TR(REMOVE_ITEM))) {
                     layout.buttons.erase(layout.buttons.begin() + selectedButtonIndex);
                 }
             }

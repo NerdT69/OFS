@@ -5,6 +5,11 @@
 #include <vector>
 #include <variant>
 
+// Undef DELETE macro from windows.h to avoid conflict with Tr::DELETE enum
+#ifdef DELETE
+#undef DELETE
+#endif
+
 class OFS_Translator
 {
     private:

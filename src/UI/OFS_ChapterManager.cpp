@@ -72,7 +72,7 @@ void OFS_ChapterManager::ShowWindow(bool* open) noexcept
                 ImGui::TextUnformatted(timeBuf);
 
                 ImGui::TableNextColumn();
-                if (ImGui::Button(TR(DELETE))) 
+                if (ImGui::Button(TR(REMOVE_ITEM))) 
                 {
                     deleteIdx = i;
                     chapterStateChange = true;

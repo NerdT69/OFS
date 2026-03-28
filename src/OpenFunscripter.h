@@ -169,6 +169,7 @@ public:
     int Run() noexcept;
     void Step() noexcept;
     void Shutdown() noexcept;
+    static void SaveState() noexcept;
 
     inline const std::vector<std::shared_ptr<Funscript>>& LoadedFunscripts() const noexcept
     {

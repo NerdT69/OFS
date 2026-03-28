@@ -15,6 +15,8 @@ public:
 
     void InitializeConnection(struct mg_connection* conn) noexcept;
     void SendMessage(const std::string& msg) noexcept;
+    // WebSocketSend - wrapper that avoids Windows SendMessage macro conflict
+    inline void WebSocketSend(const std::string& msg) noexcept { SendMessage(msg); }
     void Close() noexcept;
     void HandleMessage(const std::string& msg) noexcept;
 

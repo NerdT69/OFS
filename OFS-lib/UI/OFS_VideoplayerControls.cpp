@@ -24,11 +24,12 @@ void OFS_VideoplayerControls::VideoLoaded(const VideoLoadedEvent* ev) noexcept
     videoPreview->PreviewVideo(ev->videoPath, 0.f);
 }
 
-void OFS_VideoplayerControls::Init(OFS_Videoplayer* player, bool hwAccel, uint32_t prefStateHandle) noexcept
+void OFS_VideoplayerControls::Init(OFS_Videoplayer* player, bool hwAccel, uint32_t prefStateHandle, std::function<void()> saveCallback) noexcept
 {
     if(this->player) return;
     this->player = player;
     this->prefStateHandle = prefStateHandle;
+    this->saveStateCallback = std::move(saveCallback);
     chapterStateHandle = OFS_ProjectState<ChapterState>::Register(ChapterState::StateName);
     Heatmap = std::make_unique<FunscriptHeatmap>();
     videoPreview = std::make_unique<VideoPreview>(hwAccel);
@@ -649,6 +650,7 @@ void OFS_VideoplayerControls::DrawControls() noexcept
         if (prefStateHandle != 0xFFFF'FFFF) {
             auto& prefState = PreferenceState::State(prefStateHandle);
             prefState.muted = mute;
+            if (saveStateCallback) saveStateCallback();
         }
     }
     ImGui::SetColumnWidth(0, ImGui::GetItemRectSize().x + 10);
@@ -665,6 +667,7 @@ void OFS_VideoplayerControls::DrawControls() noexcept
         if (prefStateHandle != 0xFFFF'FFFF) {
             auto& prefState = PreferenceState::State(prefStateHandle);
             prefState.volume = volume;
+            if (saveStateCallback) saveStateCallback();
         }
     }
     ImGui::NextColumn();

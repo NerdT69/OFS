@@ -142,6 +142,8 @@ if(WIN32)
 	)
 	target_compile_definitions(${PROJECT_NAME} PUBLIC
 		"NOMINMAX"
+		"_UNICODE"
+		"UNICODE"
 	)
 elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
 	# linux etc. 

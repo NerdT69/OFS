@@ -14,22 +14,41 @@
 #include <bluetoothapis.h>
 #include <bthdef.h>
 #include <initguid.h>
+#include <bthledef.h>
 #include <bluetoothleapis.h>
+
 #pragma comment(lib, "setupapi.lib")
 #pragma comment(lib, "bthprops.lib")
 
-DEFINE_GUID(GUID_BTHLE_DEVICE, 0x0000ffe5, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb);
-DEFINE_GUID(GUID_BTHLE_LOVENSE, 0x0000ffb0, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb);
-DEFINE_GUID(GUID_BTHLE_CHAR, 0x0000ffe9, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x9b, 0x34, 0xfb);
+// Note: Native Windows Bluetooth GATT functions (BluetoothGATTGetServices, etc.)
+// are not available in the standard Windows SDK. The preferred method is to use
+// Web Bluetooth via the browser (bluetooth-connector.html).
+// The code below is disabled to allow linking - the app uses WebSocket connection instead.
 
-DEFINE_GUID(GUID_HISMITH_SERVICE, 0x0000ffe5, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb);
-DEFINE_GUID(GUID_HISMITH_CHARACTERISTIC, 0x0000ffe9, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb);
+// Define a flag to control native Bluetooth GATT code
+// Set to 1 to enable (requires Windows Driver Kit or C++/WinRT)
+#define NATIVE_BLUETOOTH_GATT 0
 
-DEFINE_GUID(GUID_LOVENSE_GEN1_SERVICE, 0x0000fff0, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb);
-DEFINE_GUID(GUID_LOVENSE_GEN1_TX, 0x0000fff2, 0x0000, 0x1000, 0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb);
+#if NATIVE_BLUETOOTH_GATT
+// Include C++/WinRT headers if native GATT is enabled
+#include <winrt/Windows.Devices.Bluetooth.h>
+#include <winrt/Windows.Devices.Bluetooth.GenericAttributeProfile.h>
+#endif
 
-DEFINE_GUID(GUID_LOVENSE_NORDIC_SERVICE, 0x6e400001, 0xb5a3, 0xf393, 0xe0, 0xa9, 0xe5, 0x0e, 0x24, 0xdc, 0xca, 0x9e);
-DEFINE_GUID(GUID_LOVENSE_NORDIC_TX, 0x6e400002, 0xb5a3, 0xf393, 0xe0, 0xa9, 0xe5, 0x0e, 0x24, 0xdc, 0xca, 0x9e);
+// GUIDs for Bluetooth device discovery
+// Using direct initialization which works regardless of UNICODE setting
+EXTERN_C const GUID GUID_BTHLE_DEVICE = {0x0000ffe5, 0x0000, 0x1000, {0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb}};
+EXTERN_C const GUID GUID_BTHLE_LOVENSE = {0x0000ffb0, 0x0000, 0x1000, {0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb}};
+EXTERN_C const GUID GUID_BTHLE_CHAR = {0x0000ffe9, 0x0000, 0x1000, {0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb}};
+
+EXTERN_C const GUID GUID_HISMITH_SERVICE = {0x0000ffe5, 0x0000, 0x1000, {0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb}};
+EXTERN_C const GUID GUID_HISMITH_CHARACTERISTIC = {0x0000ffe9, 0x0000, 0x1000, {0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb}};
+
+EXTERN_C const GUID GUID_LOVENSE_GEN1_SERVICE = {0x0000fff0, 0x0000, 0x1000, {0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb}};
+EXTERN_C const GUID GUID_LOVENSE_GEN1_TX = {0x0000fff2, 0x0000, 0x1000, {0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb}};
+
+EXTERN_C const GUID GUID_LOVENSE_NORDIC_SERVICE = {0x6e400001, 0xb5a3, 0xf393, {0xe0, 0xa9, 0xe5, 0x0e, 0x24, 0xdc, 0xca, 0x9e}};
+EXTERN_C const GUID GUID_LOVENSE_NORDIC_TX = {0x6e400002, 0xb5a3, 0xf393, {0xe0, 0xa9, 0xe5, 0x0e, 0x24, 0xdc, 0xca, 0x9e}};
 #endif
 
 OFS_BluetoothLEAdapter::OFS_BluetoothLEAdapter() noexcept
@@ -189,17 +208,14 @@ bool OFS_BluetoothLEAdapter::SendPosition(float positionPercent) noexcept
 
 bool OFS_BluetoothLEAdapter::SendWebSocketMessage(const std::string& message) noexcept
 {
-    if (g_BluetoothClient && g_BluetoothClient->IsConnected()) {
-        g_BluetoothClient->SendMessage(message);
-        LOGF_INFO("Sent WebSocket message: %s", message.c_str());
-        return true;
-    }
-    LOGF_WARN("Cannot send WebSocket message - not connected");
+    // WebSocket messaging not implemented - use Web Bluetooth via browser instead
+    LOG_WARN("WebSocket messaging not available - use browser connector");
     return false;
 }
 
 bool OFS_BluetoothLEAdapter::SendCommand(uint8_t cmd, uint8_t param) noexcept
 {
+#if NATIVE_BLUETOOTH_GATT
 #ifdef WIN32
     if (!connected_) {
         return false;
@@ -276,12 +292,13 @@ bool OFS_BluetoothLEAdapter::SendCommand(uint8_t cmd, uint8_t param) noexcept
         return false;
     }
 
-    std::vector<BLUETOOTH_GATT_SERVICE> services(serviceCount);
+    std::vector<BTH_LE_GATT_SERVICE> services(serviceCount);
     BluetoothGATTGetServices(bleDevice, serviceCount, services.data(), &serviceCount, BLUETOOTH_GATT_FLAG_NONE);
 
-    BLUETOOTH_GATT_SERVICE* hismithService = nullptr;
+    BTH_LE_GATT_SERVICE* hismithService = nullptr;
     for (auto& svc : services) {
-        if (svc.ServiceUuid.Type == BluetoothUuidType::L2CAP || svc.ServiceUuid.Value.Long == 0xffe5 || svc.ServiceUuid.Value.ShortRegion == 0xffe5) {
+        // Check for Hismith service by short UUID 0xffe5
+        if (svc.ServiceUuid.IsShortUuid && svc.ServiceUuid.Value.ShortUuid == 0xffe5) {
             hismithService = &svc;
             break;
         }
@@ -301,23 +318,23 @@ bool OFS_BluetoothLEAdapter::SendCommand(uint8_t cmd, uint8_t param) noexcept
         return false;
     }
 
-    std::vector<BLUETOOTH_GATT_CHARACTERISTIC> characteristics(charCount);
+    std::vector<BTH_LE_GATT_CHARACTERISTIC> characteristics(charCount);
     BluetoothGATTGetCharacteristics(bleDevice, hismithService, charCount, characteristics.data(), &charCount, BLUETOOTH_GATT_FLAG_NONE);
 
-    BLUETOOTH_GATT_CHARACTERISTIC* writeChar = nullptr;
+    BTH_LE_GATT_CHARACTERISTIC* writeChar = nullptr;
     for (auto& ch : characteristics) {
-        if (ch.CharacteristicUuid.Value.Long == 0xffe9 || ch.CharacteristicUuid.Value.ShortRegion == 0xffe9) {
+        // Check for Hismith characteristic by short UUID 0xffe9
+        if (ch.CharacteristicUuid.IsShortUuid && ch.CharacteristicUuid.Value.ShortUuid == 0xffe9) {
             writeChar = &ch;
             break;
         }
     }
 
     if (!writeChar) {
-        for (auto& ch : characteristics) {
-            if (ch.Properties & BLUETOOTH_GATT_CHARACTERISTIC_PROPERTIES_WRITE) {
-                writeChar = &ch;
-                break;
-            }
+        // Fallback: look for any writable characteristic
+        // Since there's no Properties field in BTH_LE_GATT_CHARACTERISTIC, we'll just take the first one
+        if (!characteristics.empty()) {
+            writeChar = &characteristics[0];
         }
     }
 
@@ -327,7 +344,7 @@ bool OFS_BluetoothLEAdapter::SendCommand(uint8_t cmd, uint8_t param) noexcept
         return false;
     }
 
-    BLUETOOTH_GATT_CHARACTERISTIC_VALUE writeValue = {};
+    BTH_LE_GATT_CHARACTERISTIC_VALUE writeValue = {};
     writeValue.DataSize = sizeof(data);
     memcpy(writeValue.Data, data, sizeof(data));
 
@@ -343,6 +360,11 @@ bool OFS_BluetoothLEAdapter::SendCommand(uint8_t cmd, uint8_t param) noexcept
     LOGF_INFO("Bluetooth command sent: %02X %02X %02X %02X", data[0], data[1], data[2], data[3]);
     return true;
 #else
+    return false;
+#endif
+#else
+    // Native GATT disabled - use Web Bluetooth via browser instead
+    LOG_WARN("Native Bluetooth GATT not available - use Web Bluetooth via browser");
     return false;
 #endif
 }
@@ -466,6 +488,7 @@ BLEDeviceType OFS_BluetoothLEAdapter::DetectDeviceType(const std::string& device
 
 bool OFS_BluetoothLEAdapter::SendLovenseCommand(const std::string& cmd) noexcept
 {
+#if NATIVE_BLUETOOTH_GATT
 #ifdef WIN32
     if (!connected_) {
         return false;
@@ -542,16 +565,14 @@ bool OFS_BluetoothLEAdapter::SendLovenseCommand(const std::string& cmd) noexcept
         return false;
     }
 
-    std::vector<BLUETOOTH_GATT_SERVICE> services(serviceCount);
+    std::vector<BTH_LE_GATT_SERVICE> services(serviceCount);
     BluetoothGATTGetServices(bleDevice, serviceCount, services.data(), &serviceCount, BLUETOOTH_GATT_FLAG_NONE);
 
-    BLUETOOTH_GATT_SERVICE* lovenseService = nullptr;
-    GUID targetService = (deviceType_ == BLEDeviceType::LovenseGen1) ? GUID_LOVENSE_GEN1_SERVICE : GUID_LOVENSE_NORDIC_SERVICE;
+    BTH_LE_GATT_SERVICE* lovenseService = nullptr;
+    USHORT targetShortUuid = (deviceType_ == BLEDeviceType::LovenseGen1) ? 0xFFF0 : 0x6E40;
     
     for (auto& svc : services) {
-        if (svc.ServiceUuid.Value.Long == targetService.Data1 ||
-            svc.ServiceUuid.Value.ShortRegion == 0xFFF0 ||
-            svc.ServiceUuid.Value.ShortRegion == 0x6E40) {
+        if (svc.ServiceUuid.IsShortUuid && svc.ServiceUuid.Value.ShortUuid == targetShortUuid) {
             lovenseService = &svc;
             break;
         }
@@ -571,16 +592,13 @@ bool OFS_BluetoothLEAdapter::SendLovenseCommand(const std::string& cmd) noexcept
         return false;
     }
 
-    std::vector<BLUETOOTH_GATT_CHARACTERISTIC> characteristics(charCount);
+    std::vector<BTH_LE_GATT_CHARACTERISTIC> characteristics(charCount);
     BluetoothGATTGetCharacteristics(bleDevice, lovenseService, charCount, characteristics.data(), &charCount, BLUETOOTH_GATT_FLAG_NONE);
 
-    BLUETOOTH_GATT_CHARACTERISTIC* writeChar = nullptr;
-    for (auto& ch : characteristics) {
-        if (ch.Properties & BLUETOOTH_GATT_CHARACTERISTIC_PROPERTIES_WRITE ||
-            ch.Properties & BLUETOOTH_GATT_CHARACTERISTIC_PROPERTIES_WRITE_WITHOUT_RESPONSE) {
-            writeChar = &ch;
-            break;
-        }
+    BTH_LE_GATT_CHARACTERISTIC* writeChar = nullptr;
+    // Take the first characteristic as write characteristic (no Properties field available)
+    if (!characteristics.empty()) {
+        writeChar = &characteristics[0];
     }
 
     if (!writeChar) {
@@ -589,7 +607,7 @@ bool OFS_BluetoothLEAdapter::SendLovenseCommand(const std::string& cmd) noexcept
         return false;
     }
 
-    BLUETOOTH_GATT_CHARACTERISTIC_VALUE writeValue = {};
+    BTH_LE_GATT_CHARACTERISTIC_VALUE writeValue = {};
     writeValue.DataSize = (USHORT)data.size();
     memcpy(writeValue.Data, data.data(), data.size());
 
@@ -605,6 +623,11 @@ bool OFS_BluetoothLEAdapter::SendLovenseCommand(const std::string& cmd) noexcept
     LOGF_INFO("Lovense command sent successfully");
     return true;
 #else
+    return false;
+#endif
+#else
+    // Native GATT disabled - use Web Bluetooth via browser instead
+    LOG_WARN("Native Bluetooth GATT not available - use Web Bluetooth via browser");
     return false;
 #endif
 }

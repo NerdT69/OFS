@@ -349,7 +349,7 @@ KeyModalType OFS_KeybindingSystem::renderActionRow(OFS_ActionUI& ui) noexcept
             ImGui::NextColumn();
             ImGui::Checkbox(TR(REPEAT), &trigger.ShouldRepeat);
             ImGui::NextColumn();
-            if(ImGui::Button(FMT("%s " ICON_TRASH, TR(DELETE)), ImVec2(-1.f, 0.f)))
+            if(ImGui::Button(FMT("%s " ICON_TRASH, TR(REMOVE_ITEM)), ImVec2(-1.f, 0.f)))
             { 
                 deleteIdx = i; 
             }
@@ -465,7 +465,7 @@ void OFS_KeybindingSystem::RenderKeybindingWindow() noexcept
                 auto& orphanTrigger = orphanTriggers[i];
                 ImGui::Text("%s [%s]", orphanTrigger.MappedActionId.c_str(), getTriggerText(orphanTrigger));
                 ImGui::SameLine();
-                if(ImGui::Button(FMT("%s " ICON_TRASH, TR(DELETE))))
+                if(ImGui::Button(FMT("%s " ICON_TRASH, TR(REMOVE_ITEM))))
                 {
                     deleteIdx = i;
                 }

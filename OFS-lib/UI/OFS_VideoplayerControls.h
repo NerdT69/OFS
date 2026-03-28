@@ -3,6 +3,7 @@
 #include "GradientBar.h"
 #include "OFS_Videopreview.h"
 #include "FunscriptHeatmap.h"
+#include <functional>
 
 class OFS_VideoplayerControls
 {
@@ -22,6 +23,7 @@ private:
 	static constexpr int32_t PreviewUpdateMs = 1000;
 	uint32_t lastPreviewUpdate = 0;
 	class OFS_Videoplayer* player = nullptr;
+	std::function<void()> saveStateCallback;
 
 	bool DrawChapter(ImDrawList* drawList, const ImRect& frameBB, class Chapter& chapter, ImDrawFlags drawFlags, float currentTime) noexcept;
 	bool DrawBookmark(ImDrawList* drawList, const ImRect& frameBB, class Bookmark& bookmark) noexcept;
@@ -36,7 +38,7 @@ public:
 	std::unique_ptr<VideoPreview> videoPreview;
 	std::unique_ptr<FunscriptHeatmap> Heatmap;
 
-	void Init(class OFS_Videoplayer* player, bool hwAccel, uint32_t prefStateHandle = 0xFFFF'FFFF) noexcept;
+	void Init(class OFS_Videoplayer* player, bool hwAccel, uint32_t prefStateHandle = 0xFFFF'FFFF, std::function<void()> saveCallback = nullptr) noexcept;
 
 	inline void UpdateHeatmap(float totalDuration, const FunscriptArray& actions) noexcept
 	{

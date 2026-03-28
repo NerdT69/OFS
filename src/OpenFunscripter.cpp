@@ -96,7 +96,7 @@ bool OpenFunscripter::imguiSetup() noexcept
     return true;
 }
 
-static void SaveState() noexcept
+void OpenFunscripter::SaveState() noexcept
 {
     auto stateJson = OFS_StateManager::Get()->SerializeAppAll(true);
     auto stateBin = Util::SerializeCBOR(stateJson);
@@ -278,13 +278,15 @@ bool OpenFunscripter::Init(int argc, char* argv[])
         return false;
     }
 
-    playerControls.Init(player.get(), prefState.forceHwDecoding, preferences->StateHandle());
+    playerControls.Init(player.get(), prefState.forceHwDecoding, preferences->StateHandle(),
+        []() noexcept { OpenFunscripter::SaveState(); });
     undoSystem = std::make_unique<UndoSystem>();
 
     keys = std::make_unique<OFS_KeybindingSystem>();
     registerBindings();
 
     scriptTimeline.Init(stateHandle);
+    scriptTimeline.SetAudioWaveformVisible(ofsState.showWaveform);
 
     scripting = std::make_unique<ScriptingMode>();
     scripting->Init();
@@ -1758,9 +1760,12 @@ void OpenFunscripter::Step() noexcept
                 ofsState.patternLayout = patternPicker->GetLayout();
             }
 
-            if (preferences->ShowPreferenceWindow()) {}
+            if (preferences->ShowPreferenceWindow()) {
+                SaveState();
+            }
 
             playerControls.DrawControls();
+            ofsState.showWaveform = scriptTimeline.IsAudioWaveformVisible();
 
             if (Status & OFS_GradientNeedsUpdate) {
                 Status &= ~(OFS_GradientNeedsUpdate);
@@ -2958,7 +2963,7 @@ void OpenFunscripter::ShowAboutWindow(bool* open) noexcept
     ImGui::Text("%s: %s", TR(GIT_COMMIT), OFS_LATEST_GIT_HASH);
 
     if (ImGui::Button(FMT("%s " ICON_GITHUB, TR(LATEST_RELEASE)), ImVec2(-1.f, 0.f))) {
-        Util::OpenUrl("https://github.com/NerdT69/OFS");
+        Util::OpenUrl("https://github.com/NerdT69/OFS/releases/latest");
     }
     ImGui::End();
 }

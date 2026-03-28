@@ -332,7 +332,7 @@ void OFS_DeviceManager::SetHismithServerAddress(const std::string& addr, int por
 {
     if (hismithAdapter) {
         hismithAdapter->SetServerAddress(addr);
-        hismithAdapter->SetPort(port);
+        hismithAdapter->SetPortNumber(port);
         hismithAdapter->SetGameToken(token);
     }
 }

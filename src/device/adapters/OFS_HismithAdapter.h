@@ -38,7 +38,7 @@ public:
     
     // Configuration
     void SetServerAddress(const std::string& addr) noexcept { serverAddress_ = addr; }
-    void SetPort(int port) noexcept { port_ = port; }
+    void SetPortNumber(int port) noexcept { port_ = port; }
     void SetGameToken(const std::string& token) noexcept { gameToken_ = token; }
     
 private:

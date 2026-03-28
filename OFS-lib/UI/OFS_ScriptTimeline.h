@@ -55,6 +55,8 @@ public:
 	inline uint32_t StateHandle() const noexcept { return stateHandle; }
 	void Init(uint32_t ofsStateHandle = 0);
 	inline void ClearAudioWaveform() noexcept { ShowAudioWaveform = false; Wave.data.Clear(); }
+	inline bool IsAudioWaveformVisible() const noexcept { return ShowAudioWaveform; }
+	inline void SetAudioWaveformVisible(bool visible) noexcept { ShowAudioWaveform = visible; }
 	inline void setStartSelection(float time) noexcept { startSelectionTime = time; }
 	inline float selectionStart() const noexcept { return startSelectionTime; }
 	void ShowScriptPositions(const OFS_Videoplayer* player, BaseOverlay* overlay, const std::vector<std::shared_ptr<Funscript>>& scripts, int activeScriptIdx) noexcept;
