@@ -209,13 +209,17 @@ public:
     inline static nlohmann::json ParseCBOR(const std::vector<uint8_t>& data, bool* success) noexcept
     {
         try {
-            auto json = nlohmann::json::from_cbor(data);
+            auto json = nlohmann::json::from_cbor(data, true, false);
             *success = !json.is_discarded();
             return json;
         }
         catch (const std::exception& e) {
             *success = false;
             LOGF_ERROR("%s", e.what());
+        }
+        catch (...) {
+            *success = false;
+            LOG_ERROR("ParseCBOR threw unknown exception.");
         }
         return {};
     }

@@ -93,38 +93,70 @@
         let currentChar = null;
         let lastSentPosition = 0;
         
-        // Command queue to handle GATT operations sequentially
-        let pendingCommand = null;
+        // FIFO command queue to handle GATT operations sequentially
+        // Using a proper queue prevents dropping commands when BLE writes are in progress
+        // Each entry is {cmd: string, timestamp: number}
+        let commandQueue = [];
         let isSending = false;
-        let lastSentValue = -1;
+        let lastSentValue = '';
+        const MAX_COMMAND_AGE_MS = 500; // Drop commands older than 500ms to prevent lag buildup
         
         async function processCommandQueue() {
-            if (isSending || pendingCommand === null) {
+            if (isSending || commandQueue.length === 0) {
                 return;
             }
             
-            // Skip if same as last sent
-            if (pendingCommand === lastSentValue) {
-                pendingCommand = null;
+            // Remove stale commands (older than MAX_COMMAND_AGE_MS) to prevent lag buildup
+            const now = Date.now();
+            commandQueue = commandQueue.filter(item => now - item.timestamp < MAX_COMMAND_AGE_MS);
+            
+            if (commandQueue.length === 0) {
+                return;
+            }
+            
+            // Get the oldest command (we add to end, process from front)
+            let item = commandQueue.shift();
+            let cmd = item.cmd;
+            
+            // Skip if identical to last sent (no point sending exact same speed twice in a row)
+            if (cmd === lastSentValue && cmd.startsWith('AA,')) {
+                // Still process next in queue
+                if (commandQueue.length > 0) {
+                    processCommandQueue();
+                }
                 return;
             }
             
             isSending = true;
-            const cmd = pendingCommand;
-            pendingCommand = null;
             
             try {
-                const bytes = cmd.split(',').map(x => parseInt(x, 16));
-                await currentChar.writeValue(new Uint8Array(bytes));
+                let data;
+                if (cmd.includes(',')) {
+                    // Hex command format (Hismith): "AA,04,08,0C"
+                    data = new Uint8Array(cmd.split(',').map(x => parseInt(x, 16)));
+                } else {
+                    // Text command format (Lovense): "Vibrate:5;"
+                    data = new TextEncoder().encode(cmd);
+                }
+                // Use writeWithoutResponse for speed - no need to wait for ACK on position updates
+                // This is ~2x faster than writeWithResponse and prevents command backlog
+                try {
+                    await currentChar.writeValueWithoutResponse(data);
+                } catch (e) {
+                    // Fallback to writeWithResponse if device requires it
+                    try {
+                        await currentChar.writeValueWithResponse(data);
+                    } catch (e2) {
+                        await currentChar.writeValue(data);
+                    }
+                }
                 lastSentValue = cmd;
-                ws.send('OK');
             } catch (e) {
                 log('Error: ' + e.message, 'error');
-                ws.send('ERROR:' + e.message);
             } finally {
                 isSending = false;
                 // Process next command if any
-                if (pendingCommand !== null) {
+                if (commandQueue.length > 0) {
                     processCommandQueue();
                 }
             }
@@ -143,16 +175,13 @@
             // checksum = (0x09 + 0xA0) & 0xFF = 0xA9
             const cmd = 'FF,09,A0,A9';
             
-            // Only send query if last position was different (debounce)
-            // Actually we need to keep querying to get updates, but we'll filter in the app
-            // Let's just query less frequently to reduce duplicates
-            sendHismithCommand(cmd, true).then(() => {
-                // Schedule next query if still enabled - faster interval to capture more movements
+            // Queue the query command to avoid GATT conflicts with speed commands
+            commandQueue.push({cmd: cmd, timestamp: Date.now()});
+            processCommandQueue().then(() => {
+                // Schedule next query if still enabled
                 if (queryPositionTimeout) {
                     queryPositionTimeout = setTimeout(queryDevicePosition, 200);
                 }
-            }).catch(e => {
-                log('Query position error: ' + e.message, 'error');
             });
         }
         
@@ -181,7 +210,7 @@
                 
                 const data = msg.substring(5);
                 // Also send the command to the device (don't extract position here to avoid duplicate/echo)
-                sendHismithCommand(data, false);
+                sendHismithCommand(data);
             } else if (msg.startsWith('LOVENSE:')) {
                 sendLovenseCommand(msg.substring(8));
             } else if (msg === 'DISCONNECT') {
@@ -191,8 +220,8 @@
                 }
                 currentDevice = null;
                 currentChar = null;
-                pendingCommand = null;
-                lastSentValue = -1;
+                commandQueue = [];
+                lastSentValue = '';
                 document.getElementById('deviceInfo').style.display = 'none';
                 statusEl.textContent = 'Disconnected';
                 statusEl.className = 'status waiting';
@@ -212,23 +241,18 @@
                 ws.send('ERROR:Not connected');
                 return;
             }
-            try {
-                const bytes = data.split(',').map(x => parseInt(x, 16));
-                
-                // Use writeWithResponse if available to get acknowledgment
-                try {
-                    await currentChar.writeValueWithResponse(new Uint8Array(bytes));
-                } catch (e) {
-                    // Fall back to regular write
-                    await currentChar.writeValue(new Uint8Array(bytes));
-                }
-                
-                log('Sent Hismith command: ' + data, 'success');
-                ws.send('OK');
-            } catch (e) {
-                log('Error: ' + e.message, 'error');
-                ws.send('ERROR:' + e.message);
+
+            // Queue the command for sequential GATT processing
+            // Limit queue size to prevent memory buildup during high-framerate playback
+            // Remove old timestamp entries before adding new ones
+            const now = Date.now();
+            commandQueue = commandQueue.filter(item => now - item.timestamp < MAX_COMMAND_AGE_MS);
+            if (commandQueue.length > 5) {
+                // Drop intermediate commands, keep only recent ones to maintain responsiveness
+                commandQueue.splice(0, commandQueue.length - 3);
             }
+            commandQueue.push({cmd: data, timestamp: now});
+            processCommandQueue();
         }
         
         async function sendLovenseCommand(cmd) {
@@ -237,15 +261,10 @@
                 ws.send('ERROR:Not connected');
                 return;
             }
-            try {
-                const encoder = new TextEncoder();
-                await currentChar.writeValue(encoder.encode(cmd + ';'));
-                ws.send('OK');
-                log('Sent Lovense command: ' + cmd, 'success');
-            } catch (e) {
-                log('Error: ' + e.message, 'error');
-                ws.send('ERROR:' + e.message);
-            }
+            // Use the command queue to prevent GATT conflicts
+            const data = cmd + ';';
+            commandQueue.push({cmd: data, timestamp: Date.now()});
+            processCommandQueue();
         }
         
         // Handle characteristic value changes (device position feedback)

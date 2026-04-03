@@ -101,8 +101,8 @@ void OFS_Project::loadNecessaryGlyphs() noexcept
 bool OFS_Project::Load(const std::string& path) noexcept
 {
     FUN_ASSERT(!valid, "Can't import if project is already loaded.");
-    bool oldProjectIncompatible = false;
-#if 1
+    bool deserializationFailed = false;
+    bool parsingFailed = false;
     std::vector<uint8_t> projectBin;
     auto fileSize = Util::ReadFile(path.c_str(), projectBin);
     if (fileSize > 0) {
@@ -110,57 +110,118 @@ bool OFS_Project::Load(const std::string& path) noexcept
         bool succ = false;
         auto projectState = Util::ParseCBOR(projectBin, &succ);
         if (succ) {
-            valid = OFS_StateManager::Get()->DeserializeProjectAll(projectState, true);
+            try {
+                valid = OFS_StateManager::Get()->DeserializeProjectAll(projectState, true);
+            }
+            catch (const std::exception& e) {
+                LOGF_WARN("CBOR state deserialization threw: %s", e.what());
+                succ = false;
+            }
+            catch (...) {
+                LOG_WARN("CBOR state deserialization threw unknown exception.");
+                succ = false;
+            }
+            if (!succ || !valid) {
+                LOG_WARN("CBOR deserialization failed. Attempting funscript fallback.");
+                deserializationFailed = true;
+                valid = false;
+            }
         }
         else {
             // CBOR failed, try JSON format
             std::string projectJson(projectBin.begin(), projectBin.end());
             auto json = Util::ParseJson(projectJson, &succ);
             if (succ) {
-                valid = OFS_StateManager::Get()->DeserializeProjectAll(json, false);
+                try {
+                    valid = OFS_StateManager::Get()->DeserializeProjectAll(json, false);
+                }
+                catch (const std::exception& e) {
+                    LOGF_WARN("JSON state deserialization threw: %s", e.what());
+                    succ = false;
+                }
+                catch (...) {
+                    LOG_WARN("JSON state deserialization threw unknown exception.");
+                    succ = false;
+                }
+                if (!succ || !valid) {
+                    LOG_WARN("JSON deserialization failed. Attempting funscript fallback.");
+                    deserializationFailed = true;
+                    valid = false;
+                }
             }
             else {
-                // Check if it's an old OFS 2.0 simple project (just video reference)
-                // These files are too old to load, but we can continue without project state
-                LOG_WARN("Failed to parse project file, attempting to continue without project data.");
-                // Don't set valid=false here - we want to allow loading the funscript anyway
-                // The project will have default/empty state
-                valid = true;  // Allow continuing
-                oldProjectIncompatible = true;
+                LOG_WARN("Failed to parse project file. Attempting funscript fallback.");
+                parsingFailed = true;
             }
         }
     }
-#else
-    std::string projectJson = Util::ReadFileString(path.c_str());
-    if (!projectJson.empty()) {
-        bool succ;
-        auto json = Util::ParseJson(projectJson, &succ);
-        if (succ) {
-            valid = OFS_StateManager::Get()->DeserializeProjectAll(json, false);
+    else {
+        LOG_WARN("Project file is empty or could not be read.");
+        parsingFailed = true;
+    }
+
+    // If parsing or deserialization failed, try to recover by loading the .funscript file
+    if (deserializationFailed || parsingFailed) {
+        auto projectPath = Util::PathFromString(path);
+        auto funscriptPath = projectPath;
+        funscriptPath.replace_extension(Funscript::Extension);
+        if (Util::FileExists(funscriptPath.u8string())) {
+            LOG_INFO("Recovering old project by loading funscript file.");
+            // Set lastPath BEFORE loading so MakePathRelative works
+            lastPath = path;
+            Funscripts.clear();
+            if (AddFunscript(funscriptPath.u8string())) {
+                loadMultiAxis(funscriptPath.u8string());
+                // Try to find media file
+                auto& projectState = State();
+                std::string absMediaPath;
+                if (FindMedia(funscriptPath.u8string(), &absMediaPath)) {
+                    projectState.relativeMediaPath = MakePathRelative(absMediaPath);
+                }
+                valid = true;
+            }
+            else {
+                LOG_ERROR("Failed to load funscript during recovery.");
+                valid = false;
+                lastPath.clear();
+                addError("Failed to parse project and could not load the associated funscript file.");
+            }
         }
         else {
+            LOG_ERROR("No funscript file found for recovery.");
             valid = false;
-            addError("Failed to parse project.\nIt likely is an old project file not supported in " OFS_LATEST_GIT_TAG);
+            addError("Failed to parse project file.\nNo associated .funscript file found for recovery.");
         }
     }
-#endif
 
     if (valid) {
+        // Set lastPath first so MakePathRelative works correctly
+        lastPath = path;
         auto& projectState = State();
-        OFS_Binary::Deserialize(projectState.binaryFunscriptData, *this);
-        
-        // If old project was incompatible or no funscripts loaded, try to load from .funscript file
-        if (oldProjectIncompatible || Funscripts.empty() || (Funscripts.size() == 1 && Funscripts[0]->Actions().empty())) {
-            // Try to find and load the corresponding .funscript file
+
+        // Safely deserialize embedded binary funscript data
+        if (!projectState.binaryFunscriptData.empty()) {
+            try {
+                OFS_Binary::Deserialize(projectState.binaryFunscriptData, *this);
+            }
+            catch (const std::exception& e) {
+                LOGF_WARN("Binary funscript deserialization failed: %s. Continuing with loaded funscripts.", e.what());
+            }
+            catch (...) {
+                LOG_WARN("Binary funscript deserialization failed with unknown error. Continuing with loaded funscripts.");
+            }
+        }
+
+        // If no funscripts were loaded from binary data, try the .funscript file
+        if (Funscripts.empty() || (Funscripts.size() == 1 && Funscripts[0]->Actions().empty())) {
             auto projectPath = Util::PathFromString(path);
             auto funscriptPath = projectPath;
             funscriptPath.replace_extension(Funscript::Extension);
             if (Util::FileExists(funscriptPath.u8string())) {
-                LOG_INFO("Loading funscript from old project directory");
+                LOG_INFO("Loading funscript from project directory");
                 Funscripts.clear();
                 if (AddFunscript(funscriptPath.u8string())) {
                     loadMultiAxis(funscriptPath.u8string());
-                    // Try to find media file
                     std::string absMediaPath;
                     if (FindMedia(funscriptPath.u8string(), &absMediaPath)) {
                         projectState.relativeMediaPath = MakePathRelative(absMediaPath);
@@ -168,8 +229,7 @@ bool OFS_Project::Load(const std::string& path) noexcept
                 }
             }
         }
-        
-        lastPath = path;
+
         loadNecessaryGlyphs();
     }
 

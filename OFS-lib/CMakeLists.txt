@@ -145,6 +145,7 @@ if(WIN32)
 		"_UNICODE"
 		"UNICODE"
 	)
+	target_compile_options(${PROJECT_NAME} PUBLIC /EHsc)
 elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
 	# linux etc. 
 	find_package(PkgConfig REQUIRED) 

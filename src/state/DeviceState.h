@@ -26,6 +26,13 @@ struct DeviceState
     // Device to script sync (reverse direction)
     bool syncDeviceToScript = false;
     
+    // Sync delay in seconds (lookahead to compensate for device latency)
+    // BLE devices typically need 300-500ms to account for:
+    // - BLE transmission latency (~20-50ms round trip)
+    // - Device processing time (~10ms)
+    // - Mechanical response time of the device (~100-300ms)
+    float syncDelay = 0.4f;
+    
     // Position mapping (0-100 funscript to device range)
     int minPosition = 0;
     int maxPosition = 100;
@@ -53,6 +60,7 @@ REFL_TYPE(DeviceState)
     REFL_FIELD(pauseWithVideo)
     REFL_FIELD(syncPlaybackSpeed)
     REFL_FIELD(syncDeviceToScript)
+    REFL_FIELD(syncDelay)
     REFL_FIELD(minPosition)
     REFL_FIELD(maxPosition)
 REFL_END

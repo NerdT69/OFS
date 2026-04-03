@@ -188,6 +188,11 @@ void DevicePanel::Show(bool* open) noexcept
             state.maxPosition = state.minPosition;
         }
         
+        // Sync delay (lookahead to compensate for device latency)
+        ImGui::SliderFloat("Sync Delay (s)", &state.syncDelay, 0.0f, 2.0f, "%.2f");
+        ImGui::SameLine();
+        OFS::Tooltip("Adds a lookahead delay to compensate for device playing late.\nIncrease if your device lags behind the video.");
+        
         // Sync with playback speed
         bool syncSpeed = state.syncPlaybackSpeed;
         if (ImGui::Checkbox("Sync with playback speed", &syncSpeed)) {

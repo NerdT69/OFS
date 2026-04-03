@@ -208,7 +208,10 @@ bool OFS_BluetoothLEAdapter::SendPosition(float positionPercent) noexcept
 
 bool OFS_BluetoothLEAdapter::SendWebSocketMessage(const std::string& message) noexcept
 {
-    // WebSocket messaging not implemented - use Web Bluetooth via browser instead
+    if (g_BluetoothClient && g_BluetoothClient->IsConnected()) {
+        g_BluetoothClient->WebSocketSend(message);
+        return true;
+    }
     LOG_WARN("WebSocket messaging not available - use browser connector");
     return false;
 }

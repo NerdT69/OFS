@@ -19,6 +19,7 @@ OutputDir=.\installer
 Source: "bin\{#Configuration}\OpenFunscripter.exe"; DestDir: "{app}"
 Source: "bin\{#Configuration}\*.dll"; DestDir: "{app}"
 Source: "data\*"; Flags: recursesubdirs; DestDir: "{app}\data"
+Source: "bin\{#Configuration}\data\ggml-tiny.en.bin"; DestDir: "{app}\data"
 
 [Icons]
 Name: "{commonprograms}\OpenFunscripter"; Filename: "{app}\OpenFunscripter.exe"; IconFilename: "{app}\OpenFunscripter.exe"

@@ -2006,8 +2006,8 @@ void OpenFunscripter::openFile(const std::string& file) noexcept
             LoadedProject = std::make_unique<OFS_Project>();
             OFS_StateManager::Get()->ClearProjectAll();
 
-            if (fileExtension == OFS_Project::Extension) {
-                // It's a project
+            if (fileExtension == OFS_Project::Extension || fileExtension == ".ofs") {
+                // It's a project (.ofsp or legacy .ofs)
                 LoadedProject->Load(file);
             }
             else if (fileExtension == Funscript::Extension) {

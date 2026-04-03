@@ -650,6 +650,10 @@ void OFS_DeviceManager::OnTimeChanged(const TimeChangeEvent* ev) noexcept
     // Don't send positions when video is paused
     if (!isPlaying) return;
     
+    // Only sync when device control is enabled
+    auto& state = DeviceState::State(stateHandle);
+    if (!state.enabled || !connected.load() || state.selectedDeviceIndex < 0) return;
+    
     // Get active funscript and send position
     auto app = OpenFunscripter::ptr;
     if (!app) return;
@@ -657,8 +661,9 @@ void OFS_DeviceManager::OnTimeChanged(const TimeChangeEvent* ev) noexcept
     auto activeScript = app->ActiveFunscript();
     if (!activeScript) return;
     
-    // Get position at current time
-    float position = activeScript->GetPositionAtTime(currentVideoTime);
+    // Apply sync delay as lookahead to compensate for device latency
+    float lookAheadTime = currentVideoTime + state.syncDelay;
+    float position = activeScript->GetPositionAtTime(lookAheadTime);
     
     SendPosition(position);
 }
